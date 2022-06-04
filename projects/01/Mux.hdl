@@ -3,7 +3,7 @@
 // by Nisan and Schocken, MIT Press.
 // File name: projects/01/Mux.hdl
 
-/** 
+/**
  * Multiplexor:
  * out = a if sel == 0
  *       b otherwise
@@ -14,5 +14,8 @@ CHIP Mux {
     OUT out;
 
     PARTS:
-    // Put your code here:
+    Nand(a=sel,b=sel,out=ns);
+    Nand(a=a,b=ns,out=ans);
+    Nand(a=sel,b=b,out=bs);
+    Nand(a=ans,b=bs,out=out);
 }
