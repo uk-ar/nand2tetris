@@ -16,5 +16,24 @@ CHIP PC {
     OUT out[16];
 
     PARTS:
+    //gen isload
+    Or(a=reset,b=load,out=out1);
+    Or(a=out1, b=inc, out=isload);
+    //Not(in=out2,out=isload);
+    Register(in=rin,out=prev,out=out,load=isload);
+    //gen inco
+    Inc16(in=prev,out=inco);
+
+    Mux8Way16(sel[0]=inc,sel[1]=load,sel[2]=reset,out=rin,
+    //Mux8Way16(sel[0]=reset,sel[1]=load,sel[2]=inc,out=rin,
+    a=prev,
+    b=inco,
+    c=in,
+    d=in,
+    e=false,
+    f=false,
+    g=false,
+    h=false
+    );
     // Put your code here:
 }

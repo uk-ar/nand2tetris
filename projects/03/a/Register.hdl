@@ -15,4 +15,71 @@ CHIP Register {
 
     PARTS:
     // Put your code here:
+    Bit(in=in[0], out=out[0] ,load=load);
+    Bit(in=in[1], out=out[1] ,load=load);
+    Bit(in=in[2], out=out[2] ,load=load);
+    Bit(in=in[3], out=out[3] ,load=load);
+    Bit(in=in[4], out=out[4] ,load=load);
+    Bit(in=in[5], out=out[5] ,load=load);
+    Bit(in=in[6], out=out[6] ,load=load);
+    Bit(in=in[7], out=out[7] ,load=load);
+    Bit(in=in[8], out=out[8] ,load=load);
+    Bit(in=in[9], out=out[9] ,load=load);
+    Bit(in=in[10],out=out[10],load=load);
+    Bit(in=in[11],out=out[11],load=load);
+    Bit(in=in[12],out=out[12],load=load);
+    Bit(in=in[13],out=out[13],load=load);
+    Bit(in=in[14],out=out[14],load=load);
+    Bit(in=in[15],out=out[15],load=load);
+
+    /*Mux16(b=in,sel=load,
+    out[0]=din0,
+    out[1]=din1,
+    out[2]=din2,
+    out[3]=din3,
+    out[4]=din4,
+    out[5]=din5,
+    out[6]=din6,
+    out[7]=din7,
+    out[8]=din8,
+    out[9]=din9,
+    out[10]=din10,
+    out[11]=din11,
+    out[12]=din12,
+    out[13]=din13,
+    out[14]=din14,
+    out[15]=din15,
+    a[0] =dout0,
+    a[1] =dout1,
+    a[2] =dout2,
+    a[3] =dout3,
+    a[4] =dout4,
+    a[5] =dout5,
+    a[6] =dout6,
+    a[7] =dout7,
+    a[8] =dout8,
+    a[9] =dout9,
+    a[10]=dout10,
+    a[11]=dout11,
+    a[12]=dout12,
+    a[13]=dout13,
+    a[14]=dout14,
+    a[15]=dout15
+    );
+    DFF(in=din0 ,out=dout0 ,out=out[0]);
+    DFF(in=din1 ,out=dout1 ,out=out[1]);
+    DFF(in=din2 ,out=dout2 ,out=out[2]);
+    DFF(in=din3 ,out=dout3 ,out=out[3]);
+    DFF(in=din4 ,out=dout4 ,out=out[4]);
+    DFF(in=din5 ,out=dout5 ,out=out[5]);
+    DFF(in=din6 ,out=dout6 ,out=out[6]);
+    DFF(in=din7 ,out=dout7 ,out=out[7]);
+    DFF(in=din8 ,out=dout8 ,out=out[8]);
+    DFF(in=din9 ,out=dout9 ,out=out[9]);
+    DFF(in=din10,out=dout10,out=out[10]);
+    DFF(in=din11,out=dout11,out=out[11]);
+    DFF(in=din12,out=dout12,out=out[12]);
+    DFF(in=din13,out=dout13,out=out[13]);
+    DFF(in=din14,out=dout14,out=out[14]);
+    DFF(in=din15,out=dout15,out=out[15]);*/
 }
