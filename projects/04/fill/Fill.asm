@@ -10,27 +10,51 @@
 // When no key is pressed, the program clears the screen, i.e. writes
 // "white" in every pixel;
 // the screen should remain fully clear as long as no key is pressed.
+@MAIN
+0;JMP
+
+(BLACK)
+@PATTERN
+M=-1
+@FILL_START
+0;JMP
+
+(WHITE)
+@PATTERN
+M=0
+@FILL_START
+0;JMP
 
 (FILL_START)
-@8192
+@SCREEN
 D=A
-@OFF
+@CUR
+M=D
+@KBD
+D=A
+@END
 M=D
 
 (FILL)
-@OFF
-D=M
-@SCREEN
-A=D+A
-D=-1//black
-M=D
-@OFF
-MD=M-1
+@PATTERN
+D=M//black
+@CUR
+A=M//get address!!
+M=D//fill color
+
+@CUR
+MD=M+1
+@END//until screen end
+D=A-D
 @FILL
 D;JGE
 
 (MAIN)
-@MAIN
+@KBD
+D=M
+@BLACK
+D;JGT
+@WHITE
 0;JMP
 
 //(RESTART)
