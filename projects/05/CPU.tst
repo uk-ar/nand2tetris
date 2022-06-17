@@ -24,7 +24,7 @@ tick, output, tock, output;
 set instruction %B0000001111101011, // @1003
 tick, output, tock, output;
 
-set instruction %B1110001100001000, // M=D//11111
+set instruction %B1110001100001000, // M=D//11111 strange alu?
 tick, output, tock, output;
 
 set instruction %B0000001111101100, // @1004
@@ -36,7 +36,7 @@ tick, output, tock, output;
 set instruction %B0000001111101000, // @1000
 tick, output, tock, output;
 
-set instruction %B1111010011110000, // AD=D-M//11110-0?
+set instruction %B1111010011110000, // AD=D-M//11110-11111=-1
 set inM 11111,
 tick, output, tock, output;
 
