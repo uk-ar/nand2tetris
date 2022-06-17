@@ -12,31 +12,31 @@ output-list time%S0.4.0 inM%D0.6.0 instruction%B0.16.0 reset%B2.1.2 outM%D1.6.0 
 set instruction %B0011000000111001, // @12345
 tick, output, tock, output;
 
-set instruction %B1110110000010000, // D=A
+set instruction %B1110110000010000, // D=A//12345
 tick, output, tock, output;
 
 set instruction %B0101101110100000, // @23456
 tick, output, tock, output;
 
-set instruction %B1110000111110000, // AD=A-D
+set instruction %B1110000111110000, // AD=A-D//11111
 tick, output, tock, output;
 
 set instruction %B0000001111101011, // @1003
 tick, output, tock, output;
 
-set instruction %B1110001100001000, // M=D
+set instruction %B1110001100001000, // M=D//11111
 tick, output, tock, output;
 
 set instruction %B0000001111101100, // @1004
 tick, output, tock, output;
 
-set instruction %B1110001110011000, // MD=D-1
+set instruction %B1110001110011000, // MD=D-1//11110
 tick, output, tock, output;
 
 set instruction %B0000001111101000, // @1000
 tick, output, tock, output;
 
-set instruction %B1111010011110000, // AD=D-M
+set instruction %B1111010011110000, // AD=D-M//11110-0?
 set inM 11111,
 tick, output, tock, output;
 
