@@ -10,103 +10,51 @@
 // When no key is pressed, the program clears the screen, i.e. writes
 // "white" in every pixel;
 // the screen should remain fully clear as long as no key is pressed.
-@MAIN
+
+(WHITE)
+@0//color
+M=0
+@FILL_INIT
 0;JMP
 
 (BLACK)
-@PATTERN
+@0//color
 M=-1
-@FILL_START
+@FILL_INIT
 0;JMP
 
-(WHITE)
-@PATTERN
-M=0
-@FILL_START
-0;JMP
-
-(FILL_START)
+(FILL_INIT)
 @SCREEN
 D=A
-@CUR
-M=D
-@KBD
-D=A
-@END
+//@KBD
+//D=A-1
+//D=D-1
+@1//pos
 M=D
 
 (FILL)
-@PATTERN
-D=M//black
-@CUR
-A=M//get address!!
-M=D//fill color
+@0
+D=M
+@1
+A=M
+M=D
 
-@CUR
-MD=M+1
-@END//until screen end
-D=A-D
+@1
+M=M+1
+
+@1
+D=M
+@KBD
+D=A-D//until pos==KBD
 @FILL
-D;JGE
+D;JGT
 
-(MAIN)
+(KBDCKECK)
 @KBD
 D=M
 @BLACK
 D;JGT
 @WHITE
+D;JEQ
+@KBDCHECK
 0;JMP
-
-//(RESTART)
-//@SCREEN
-//D=A
-//@0
-//M=D	//PUT SCREEN START LOCATION IN RAM0
-//
-/////////////////////////////
-//(KBDCHECK)
-//
-//@KBD
-//D=M
-//@BLACK
-//D;JGT	//JUMP IF ANY KBD KEYS ARE PRESSED
-//@WHITE
-//D;JEQ	//ELSE JUMP TO WHITEN
-//
-//@KBDCHECK
-//0;JMP
-/////////////////////////////
-//(BLACK)
-//@1
-//M=-1	//WHAT TO FILL SCREEN WITH (-1=11111111111111)
-//@CHANGE
-//0;JMP
-//
-//(WHITE)
-//@1
-//M=0	//WHAT TO FILL SCREEN WITH
-//@CHANGE
-//0;JMP
-////////////////////////////
-//(CHANGE)
-//@1	//CHECK WHAT TO FILL SCREEN WITH
-//D=M	//D CONTAINS BLACK OR WHITE
-//
-//@0
-//A=M	//GET ADRESS OF SCREEN PIXEL TO FILL
-//M=D	//FILL IT
-//
-//@0
-//D=M+1	//INC TO NEXT PIXEL
-//@KBD
-//D=A-D	//KBD-SCREEN=A
-//
-//@0
-//M=M+1	//INC TO NEXT PIXEL
-//A=M
-//
-//@CHANGE
-//D;JGT	//IF A=0 EXIT AS THE WHOLE SCREEN IS BLACK
-///////////////////////////
-//@RESTART
-//0;JMP

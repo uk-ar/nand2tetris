@@ -8,5 +8,26 @@
 //
 // This program only needs to handle arguments that satisfy
 // R0 >= 0, R1 >= 0, and R0*R1 < 32768.
+// This file is part of www.nand2tetris.org
+// and the book "The Elements of Computing Systems"
+// by Nisan and Schocken, MIT Press.
+// File name: projects/06/add/Add.asm
 
-// Put your code here.
+@2 //ans
+M=0
+
+(LOOP)
+@0
+MD=M-1
+@END
+D;JLT
+@1
+D=M
+@2
+M=D+M
+@LOOP
+0;JMP
+
+(END)
+@END
+0;JMP
