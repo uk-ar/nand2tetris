@@ -2,8 +2,7 @@
 #include <fstream>
 using namespace std;
 #include "Parser.h"
-#include "Code.h"
-#include "SymbolTable.h"
+#include "CommandWriter.h"
 
 int main(int argc, char *argv[])
 {
@@ -17,33 +16,22 @@ int main(int argc, char *argv[])
     exit(-1);
   }
   Parser *p=new Parser(fin);
-  Code *c=new Code();
-  SymbolTable *s=new SymbolTable();
+  ofstream fout{string(argv[1])+".asm"};
+  CommandWriter *c=new CommandWriter(fout);
   int cnt=0;
-  while(p->hasMoreCommands()){
-    if(p->commandType()==L_COMMAND){
-      s->addEntry(p->symbol(),cnt);
-    }else{
-      cnt++;
-    }
-    p->advance();
-  }
-  //s->print();
-  fin.clear();//clear eof flag
-  fin.seekg(0,ios_base::beg);
   int offset=16;
   p=new Parser(fin);
   while(p->hasMoreCommands()){
-    if(p->commandType()==A_COMMAND){
-      if(!s->contains(p->symbol())){
-        s->addEntry(p->symbol(),offset++);
-      }
-      cout <<"0"<< bitset<15>(s->getAddress(p->symbol()))<<endl;
-    }else if(p->commandType()==C_COMMAND){
-      // cout << p->m_inst<<endl;
-      //cout << p->m_comp << ":"<<p->m_dest << ":"<< p->m_jump <<endl;
-      cout <<"111"<< c->comp(p->m_comp) << c->dest(p->dest()) << c->jump(p->jump())<<endl;
+    //cout << p->m_inst << endl;
+    if(p->commandType()==C_ARITHMETIC){
+      c->writeArithmetic(p->arg1());
+    }else if(p->commandType()==C_PUSH or p->commandType()==C_POP){
+      c->writePushPop(p->commandType(),p->arg1(),p->arg2());
     }
+    // cout << p->m_inst << endl;
+    // cout << p->m_command << endl;
+    // cout << p->m_VMcomType << endl;
+    // cout << p->m_arg1 << endl;
     p->advance();
   }
   return 0;

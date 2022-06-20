@@ -4,74 +4,54 @@
 #include "Parser.h"
 using namespace std;
 
-Parser::Parser(istream &inputStream): is(inputStream){
-  advance();
+Parser::Parser(istream &inputStream): is(inputStream),m({
+    {"push",C_PUSH},{"pop",C_POP},{"label",C_LABEL},{"goto",C_GOTO},
+      {"if-goto",C_IF},{"function",C_FUNCTION},{"call",C_CALL},{"return",C_RETURN}
+      //function functionName nLocals
+      //call functionName nArgs
+  }){
+  //advance();
 }
 
 Parser::~Parser(){
 
 }
+
 bool Parser::hasMoreCommands(){
   return !eof;
 }
 
 void Parser::advance(){
-  string t;
-  while(getline(is,t)){
-    t.erase(t.begin(), std::find_if(t.begin(), t.end(), [](unsigned char ch) {
-      return !std::isspace(ch);
-      }));
-    stringstream ss0(t);
-    ss0 >> m_inst;
+  while(getline(is,m_inst)){
     stringstream ss(m_inst);
-    if(m_inst[0]=='/' or m_inst=="")
+    ss >> m_command;
+    if(m_command[0]=='/' or m_command=="")
       continue;
-    // cout << m_inst<<endl;
-    // cout << string(m_inst.size(),'_')<<endl;
-    if(commandType()==A_COMMAND){
-      m_symbol=m_inst.substr(1);
-      return;
-    }else if(commandType()==L_COMMAND){
-      int n=m_inst.size();
-      m_symbol=m_inst.substr(1,n-2);
-      return;
-    }
-    if(m_inst.find('=')==string::npos){
-      m_dest="";
+
+    m_VMcomType=m[m_command];
+    if(m_VMcomType==C_PUSH or m_VMcomType==C_POP or m_VMcomType==C_FUNCTION or
+       m_VMcomType==C_CALL){
+      ss>>m_arg1;
+      ss>>m_arg2;
     }else{
-      getline(ss,m_dest,'=');
+      m_VMcomType=C_ARITHMETIC;
+      m_arg1=m_command;
     }
-    if(m_inst.find(';')==string::npos){
-      getline(ss,m_comp);
-      m_jump="";
-    }else{
-      getline(ss,m_comp,';');
-      getline(ss,m_jump);
-    }
-    // cout << m_dest <<endl;
-    // cout << m_comp <<endl;
-    // cout << m_jump <<endl;
+    // cout << m_inst << endl;
+    // cout << m_command << endl;
+    // cout << string(m_command.size(),'_')<<endl;
+    // cout << m_VMcomType << endl;
     return;
   }
   eof=true;
 }
 
-enum comType Parser::commandType(){
-  if(m_inst[0]=='@')//@Xxx
-    return A_COMMAND;
-  if(m_inst[0]=='(')//(Xxx)
-    return L_COMMAND;
-  return C_COMMAND;
+enum VMcomType Parser::commandType(){
+  return m_VMcomType;
 }
-string Parser::symbol(){
-  return m_symbol;
+string Parser::arg1(){
+  return m_arg1;
 }
-string Parser::dest(){
-  return m_dest;
-}
-string Parser::comp(){
-  return m_comp;
-}
-string Parser::jump(){
-  return m_jump;
+int Parser::arg2(){
+  return m_arg2;
 }

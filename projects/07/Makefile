@@ -2,12 +2,12 @@
 #CC  = g++-11
 CC  = g++
 # (2)コンパイルオプション
-CFLAGS    = -D_GLIBCXX_DEBUG -ftrapv -std=c++17 -Wall -Wextra -O2
+CFLAGS    = -D_GLIBCXX_DEBUG -ftrapv -std=c++17 -Wall -Wextra -g
 #CFLAGS    = -std=c++11
 # (3)実行ファイル名
 TARGET  = VMtranslator
 # (4)コンパイル対象のソースコード
-SRCS    = Code.cpp SymbolTable.cpp Parser.cpp main.cpp
+SRCS    = CommandWriter.cpp Parser.cpp main.cpp
 # (5)オブジェクトファイル名
 OBJS    = $(SRCS:.cpp=.o)
 
