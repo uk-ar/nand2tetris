@@ -20,14 +20,11 @@ void CommandWriter::writeArithmetic(string command){
     cout << "D=M" << endl;
 
     cout << "@SP" << endl;
-    cout << "M=M-1" << endl;
-
-    cout << "@SP" << endl;
-    cout << "A=M" << endl;
+    cout << "A=M-1" << endl;
     cout << "D=D+M" << endl;
 
     cout << "@SP" << endl;
-    cout << "A=M" << endl;
+    cout << "A=M-1" << endl;
     cout << "M=D" << endl;
   }else if(command=="sub"){
 
