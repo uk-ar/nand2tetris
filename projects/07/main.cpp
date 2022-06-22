@@ -22,7 +22,8 @@ int main(int argc, char *argv[])
   int offset=16;
   p=new Parser(fin);
   while(p->hasMoreCommands()){
-    //cout << p->m_inst << endl;
+    cout << "// "+ p->m_inst << endl;
+    // cout << string(p->m_inst.size(),'_') << endl;
     if(p->commandType()==C_ARITHMETIC){
       c->writeArithmetic(p->arg1());
     }else if(p->commandType()==C_PUSH or p->commandType()==C_POP){
