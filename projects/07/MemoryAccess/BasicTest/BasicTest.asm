@@ -10,7 +10,6 @@ M=M+1
 // pop local 0 //local[0]=mem[300]=10
 @SP
 M=M-1
-@SP
 A=M
 D=M
 @data
@@ -45,7 +44,6 @@ M=M+1
 // pop argument 2 //arg[2]=mem[402]=21
 @SP
 M=M-1
-@SP
 A=M
 D=M
 @data
@@ -64,7 +62,6 @@ M=D
 // pop argument 1 //arg[1]=mem[401]=22
 @SP
 M=M-1
-@SP
 A=M
 D=M
 @data
@@ -91,7 +88,6 @@ M=M+1
 // pop this 6 //this[6]=mem[3006]=36
 @SP
 M=M-1
-@SP
 A=M
 D=M
 @data
@@ -126,7 +122,6 @@ M=M+1
 // pop that 5 //that[5]=mem[3015]=42
 @SP
 M=M-1
-@SP
 A=M
 D=M
 @data
@@ -145,7 +140,6 @@ M=D
 // pop that 2 //that[2]=mem[3012]=45
 @SP
 M=M-1
-@SP
 A=M
 D=M
 @data
@@ -172,7 +166,6 @@ M=M+1
 // pop temp 6 //temp[6]=mem[11]=510
 @SP
 M=M-1
-@SP
 A=M
 D=M
 @data
@@ -213,7 +206,6 @@ M=M+1
 // add //SP[52]
 @SP
 M=M-1
-@SP
 A=M
 D=M
 @SP
@@ -236,7 +228,6 @@ M=M+1
 // sub //SP[30]
 @SP
 M=M-1
-@SP
 A=M
 D=M
 @SP
@@ -270,7 +261,6 @@ M=M+1
 // add //SP[30,72]
 @SP
 M=M-1
-@SP
 A=M
 D=M
 @SP
@@ -282,7 +272,6 @@ M=D
 // sub //SP[-42]
 @SP
 M=M-1
-@SP
 A=M
 D=M
 @SP
@@ -305,7 +294,6 @@ M=M+1
 // add //SP[468]
 @SP
 M=M-1
-@SP
 A=M
 D=M
 @SP

@@ -16,8 +16,10 @@ int main(int argc, char *argv[])
     exit(-1);
   }
   Parser *p=new Parser(fin);
-  ofstream fout{string(argv[1])+".asm"};
+  string fileName=string(argv[1])+".asm";
+  ofstream fout{fileName};
   CommandWriter *c=new CommandWriter(fout);
+  c->setFileName(fileName);
   int cnt=0;
   int offset=16;
   p=new Parser(fin);

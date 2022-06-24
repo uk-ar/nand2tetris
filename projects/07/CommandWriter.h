@@ -5,6 +5,7 @@ using namespace std;
 
 class CommandWriter{
   ostream &os;
+  string fileName;
  public:
   CommandWriter(ostream &outputStream);
   void setFileName(string fileName);

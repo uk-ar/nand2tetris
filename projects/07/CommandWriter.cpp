@@ -21,8 +21,6 @@ void arg1(string command){
 void arg2(string command){
   cout << "@SP" << endl;
   cout << "M=M-1" << endl;
-
-  cout << "@SP" << endl;
   cout << "A=M" << endl;
   cout << "D=M" << endl;
 
@@ -83,41 +81,47 @@ void CommandWriter::writeArithmetic(string command){
     //abort();
   }
 }
-void getFromSegment(string segment,int index){
-    if(segment=="local"){
-      cout << "@LCL" << endl;
-      cout << "D=M" << endl;
-    }else if(segment=="argument"){
-      cout << "@ARG" << endl;
-      cout << "D=M" << endl;
-    }else if(segment=="this"){
-      cout << "@THIS" << endl;
-      cout << "D=M" << endl;
-    }else if(segment=="that"){
-      cout << "@THAT" << endl;
-      cout << "D=M" << endl;
-    }else if(segment=="temp"){
-      cout << "@R5" << endl;
-      cout << "D=A" << endl;
-    }else if(segment=="pointer"){
-      cout << "@THIS" << endl;
-      cout << "D=A" << endl;
-    }else{
-      assert(false);
-    }
-    cout << "@"+to_string(index) << endl;
-    cout << "A=D+A" << endl;
+void getFromSegment(string segment,int index,string &fileName){
+  if(segment=="constant"){
+    cout << "@"<<index << endl;
+    cout << "D=A" << endl;
+    return;
+  }else if(segment=="static"){
+    cout << "@"+fileName+"."+to_string(index) << endl;
     cout << "D=M" << endl;
-    //Store Data to D
+    return;
+  }else if(segment=="local"){
+    cout << "@LCL" << endl;
+    cout << "D=M" << endl;
+  }else if(segment=="argument"){
+    cout << "@ARG" << endl;
+    cout << "D=M" << endl;
+  }else if(segment=="this"){
+    cout << "@THIS" << endl;
+    cout << "D=M" << endl;
+  }else if(segment=="that"){
+    cout << "@THAT" << endl;
+    cout << "D=M" << endl;
+  }else if(segment=="temp"){
+    cout << "@R5" << endl;
+    cout << "D=A" << endl;
+  }else if(segment=="pointer"){
+    cout << "@THIS" << endl;
+    cout << "D=A" << endl;
+  }else{
+    assert(false);
+  }
+  cout << "@"+to_string(index) << endl;
+  cout << "A=D+A" << endl;
+  cout << "D=M" << endl;
+  //Store Data to D
+}
+void setToSegment(string segment,int index,string &fileName){
+
 }
 void CommandWriter::writePushPop(VMcomType command,string segment,int index){
   if(command==C_PUSH){
-    if(segment=="constant"){
-      cout << "@"<<index << endl;
-      cout << "D=A" << endl;
-    }else{
-      getFromSegment(segment,index);
-    }
+    getFromSegment(segment,index,fileName);
 
     cout << "@SP" << endl;
     cout << "A=M" << endl;
@@ -128,7 +132,6 @@ void CommandWriter::writePushPop(VMcomType command,string segment,int index){
   }else if(command==C_POP){//from Sp
     cout << "@SP" << endl;
     cout << "M=M-1" << endl;
-    cout << "@SP" << endl;
     cout << "A=M" << endl;
     cout << "D=M" << endl;
 
@@ -153,11 +156,19 @@ void CommandWriter::writePushPop(VMcomType command,string segment,int index){
     }else if(segment=="pointer"){
       cout << "@THIS" << endl;
       cout << "D=A" << endl;
+    }else if(segment=="static"){
     }else{
+      //cout << segment <<endl;
       assert(false);
     }
-    cout << "@"+to_string(index) << endl;
-    cout << "D=D+A" << endl;
+
+    if(segment=="static"){
+      cout << "@"+fileName+"."+to_string(index) << endl;
+      cout << "D=A" << endl;
+    }else{
+      cout << "@"+to_string(index) << endl;
+      cout << "D=D+A" << endl;
+    }
 
     cout << "@address" << endl;
     cout << "M=D" << endl;
