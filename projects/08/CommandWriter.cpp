@@ -9,6 +9,7 @@ CommandWriter::CommandWriter(ostream &outputStream): os(outputStream){
 }
 void CommandWriter::setFileName(string fileName){
 }
+
 void arg1(string command){
   cout << "@SP" << endl;
   cout << "A=M" << endl;

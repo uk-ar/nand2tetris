@@ -23,10 +23,19 @@ bool Parser::hasMoreCommands(){
 
 void Parser::advance(){
   while(getline(is,m_inst)){
-    stringstream ss(m_inst);
-    ss >> m_command;
-    if(m_command[0]=='/' or m_command=="")
+    if(m_inst[0]=='/' or m_inst=="" or m_inst==" " or m_inst.size()<3)
       continue;
+    stringstream ss(m_inst);
+
+    ss >> m_command;
+
+    // cout << m_inst << endl;
+    // cout << string(m_inst.size(),'_') << endl;
+
+    if(m_command[0]=='/' or m_command=="" or m_command==" ")
+      continue;
+    // cout << m_command << endl;
+    // cout << string(m_command.size(),'_') << endl;
 
     m_VMcomType=m[m_command];
     if(m_VMcomType==C_PUSH or m_VMcomType==C_POP or m_VMcomType==C_FUNCTION or
