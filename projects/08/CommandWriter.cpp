@@ -4,305 +4,310 @@
 #include "CommandWriter.h"
 using namespace std;
 
-CommandWriter::CommandWriter(ostream &outputStream): os(outputStream){
+CommandWriter::CommandWriter(ostream &outputStream):fout(outputStream),line(0){
 
 }
 void CommandWriter::setFileName(string fileName){
+
 }
 
-void arg1(string command){
-  cout << "@SP" << endl;
-  cout << "A=M" << endl;
-  cout << "A=A-1" << endl;
+void arg1(string command,ostream &fout,int &line){
+  fout << "@SP" << " //" << line++ << endl;
+  fout << "A=M" << " //" << line++ << endl;
+  fout << "A=A-1" << " //" << line++ << endl;
   if(command=="neg")
-    cout << "M=-M" << endl;
+    fout << "M=-M" << " //" << line++ << endl;
   else if(command=="not")
-    cout << "M=!M" << endl;
+    fout << "M=!M" << " //" << line++ << endl;
 }
-void arg2(string command){
-  cout << "@SP" << endl;
-  cout << "M=M-1" << endl;
-  cout << "A=M" << endl;
-  cout << "D=M" << endl;
+void arg2(string command,ostream &fout,int &line){
+  fout << "@SP" << " //" << line++ << endl;
+  fout << "M=M-1" << " //" << line++ << endl;
+  fout << "A=M" << " //" << line++ << endl;
+  fout << "D=M" << " //" << line++ << endl;
 
-  cout << "@SP" << endl;
-  cout << "A=M-1" << endl;
+  fout << "@SP" << " //" << line++ << endl;
+  fout << "A=M-1" << " //" << line++ << endl;
   if(command=="add"){
-    cout << "D=M+D" << endl;
+    fout << "D=M+D" << " //" << line++ << endl;
   }else if(command=="sub"){
-    cout << "D=M-D" << endl;
+    fout << "D=M-D" << " //" << line++ << endl;
   }else if(command=="and"){
-    cout << "D=D&M" << endl;
+    fout << "D=D&M" << " //" << line++ << endl;
   }else if(command=="or"){
-    cout << "D=D|M" << endl;
+    fout << "D=D|M" << " //" << line++ << endl;
   }
-  cout << "@SP" << endl;
-  cout << "A=M-1" << endl;
-  cout << "M=D" << endl;
+  fout << "@SP" << " //" << line++ << endl;
+  fout << "A=M-1" << " //" << line++ << endl;
+  fout << "M=D" << " //" << line++ << endl;
 }
-void comp(string command){
+void comp(string command,ostream &fout,int &line){
   static int cnt=0;
   string label="true"+to_string(cnt);
   cnt++;
-  cout << "@result" << endl;
-  cout << "M=-1" << endl;//true
+  fout << "@result" << " //" << line++ << endl;
+  fout << "M=-1" << " //" << line++ << endl;//true
 
-  arg2("sub");//result is stored in D
-  cout << "@"+label << endl;
+  arg2("sub",fout,line);//result is stored in D
+  fout << "@"+label << " //" << line++ << endl;
   if(command=="eq")
-    cout << "D;JEQ" << endl;
+    fout << "D;JEQ" << " //" << line++ << endl;
   if(command=="lt")
-    cout << "D;JLT" << endl;
+    fout << "D;JLT" << " //" << line++ << endl;
   if(command=="gt")
-    cout << "D;JGT" << endl;
+    fout << "D;JGT" << " //" << line++ << endl;
 
-  cout << "@result" << endl;
-  cout << "M=0" << endl;//false
+  fout << "@result" << " //" << line++ << endl;
+  fout << "M=0" << " //" << line++ << endl;//false
 
-  cout << "("+label+")" << endl;
-  cout << "@result" << endl;
-  cout << "D=M" << endl;
+  fout << "("+label+")" << " //" << line++ << endl;
+  fout << "@result" << " //" << line++ << endl;
+  fout << "D=M" << " //" << line++ << endl;
 
-  cout << "@SP" << endl;
-  cout << "A=M" << endl;
-  cout << "A=A-1" << endl;
-  cout << "M=D" << endl;
+  fout << "@SP" << " //" << line++ << endl;
+  fout << "A=M" << " //" << line++ << endl;
+  fout << "A=A-1" << " //" << line++ << endl;
+  fout << "M=D" << " //" << line++ << endl;
 }
 void CommandWriter::writeArithmetic(string command){
-  //cout << command <<endl;
+  //fout << command <<endl;
   if(command=="add" or command=="sub" or command=="and" or command=="or"){
-    arg2(command);
+    arg2(command,fout,line);
   }else if(command=="neg" or command=="not"){
-    arg1(command);
+    arg1(command,fout,line);
   }if(command=="eq" or command=="gt" or command=="lt"){
-    comp(command);
+    comp(command,fout,line);
   }else{
-    //cout << command << endl;
+    //fout << command << " //" << line++ << endl;
     //assert(false);
     //abort();
   }
 }
-void getFromSegment(string segment,int index,string &fileName){
+void getFromSegment(string segment,int index,string &fileName,ostream &fout,int &line){
   if(segment=="constant"){
-    cout << "@"<<index << endl;
-    cout << "D=A" << endl;
+    fout << "@"<<index << " //" << line++ << endl;
+    fout << "D=A" << " //" << line++ << endl;
     return;
   }else if(segment=="static"){
-    cout << "@"+fileName+"."+to_string(index) << endl;
-    cout << "D=M" << endl;
+    fout << "@"+fileName+"."+to_string(index) << " //" << line++ << endl;
+    fout << "D=M" << " //" << line++ << endl;
     return;
   }else if(segment=="local"){
-    cout << "@LCL" << endl;
-    cout << "D=M" << endl;
+    fout << "@LCL" << " //" << line++ << endl;
+    fout << "D=M" << " //" << line++ << endl;
   }else if(segment=="argument"){
-    cout << "@ARG" << endl;
-    cout << "D=M" << endl;
+    fout << "@ARG" << " //" << line++ << endl;
+    fout << "D=M" << " //" << line++ << endl;
   }else if(segment=="this"){
-    cout << "@THIS" << endl;
-    cout << "D=M" << endl;
+    fout << "@THIS" << " //" << line++ << endl;
+    fout << "D=M" << " //" << line++ << endl;
   }else if(segment=="that"){
-    cout << "@THAT" << endl;
-    cout << "D=M" << endl;
+    fout << "@THAT" << " //" << line++ << endl;
+    fout << "D=M" << " //" << line++ << endl;
   }else if(segment=="temp"){
-    cout << "@R5" << endl;
-    cout << "D=A" << endl;
+    fout << "@R5" << " //" << line++ << endl;
+    fout << "D=A" << " //" << line++ << endl;
   }else if(segment=="pointer"){
-    cout << "@THIS" << endl;
-    cout << "D=A" << endl;
+    fout << "@THIS" << " //" << line++ << endl;
+    fout << "D=A" << " //" << line++ << endl;
   }else{
     assert(false);
   }
-  cout << "@"+to_string(index) << endl;
-  cout << "A=D+A" << endl;
-  cout << "D=M" << endl;
+  fout << "@"+to_string(index) << " //" << line++ << endl;
+  fout << "A=D+A" << " //" << line++ << endl;
+  fout << "D=M" << " //" << line++ << endl;
   //Store Data to D
 }
-void pushD(){
-  cout << "@SP" << endl;
-  cout << "A=M" << endl;
-  cout << "M=D" << endl;
+void pushD(ostream &fout,int &line){
+  fout << "@SP" << " //" << line++ << endl;
+  fout << "A=M" << " //" << line++ << endl;
+  fout << "M=D" << " //" << line++ << endl;
 
-  cout << "@SP" << endl;
-  cout << "M=M+1" << endl;
+  fout << "@SP" << " //" << line++ << endl;
+  fout << "M=M+1" << " //" << line++ << endl;
 }
-void popD(){
-  cout << "@SP" << endl;
-  cout << "M=M-1" << endl;
-  cout << "A=M" << endl;
-  cout << "D=M" << endl;
+void popD(ostream &fout,int &line){
+  fout << "@SP" << " //" << line++ << endl;
+  fout << "M=M-1" << " //" << line++ << endl;
+  fout << "A=M" << " //" << line++ << endl;
+  fout << "D=M" << " //" << line++ << endl;
 }
 void CommandWriter::writePushPop(VMcomType command,string segment,int index){
   if(command==C_PUSH){
-    getFromSegment(segment,index,fileName);
-    pushD();
+    getFromSegment(segment,index,fileName,fout,line);
+    pushD(fout,line);
   }else if(command==C_POP){//from Sp
-    popD();
+    popD(fout,line);
 
-    cout << "@data" << endl;
-    cout << "M=D" << endl;
+    fout << "@data" << " //" << line++ << endl;
+    fout << "M=D" << " //" << line++ << endl;
 
     if(segment=="local"){
-      cout << "@LCL" << endl;
-      cout << "D=M" << endl;
+      fout << "@LCL" << " //" << line++ << endl;
+      fout << "D=M" << " //" << line++ << endl;
     }else if(segment=="argument"){
-      cout << "@ARG" << endl;
-      cout << "D=M" << endl;
+      fout << "@ARG" << " //" << line++ << endl;
+      fout << "D=M" << " //" << line++ << endl;
     }else if(segment=="this"){
-      cout << "@THIS" << endl;
-      cout << "D=M" << endl;
+      fout << "@THIS" << " //" << line++ << endl;
+      fout << "D=M" << " //" << line++ << endl;
     }else if(segment=="that"){
-      cout << "@THAT" << endl;
-      cout << "D=M" << endl;
+      fout << "@THAT" << " //" << line++ << endl;
+      fout << "D=M" << " //" << line++ << endl;
     }else if(segment=="temp"){
-      cout << "@R5" << endl;
-      cout << "D=A" << endl;
+      fout << "@R5" << " //" << line++ << endl;
+      fout << "D=A" << " //" << line++ << endl;
     }else if(segment=="pointer"){
-      cout << "@THIS" << endl;
-      cout << "D=A" << endl;
+      fout << "@THIS" << " //" << line++ << endl;
+      fout << "D=A" << " //" << line++ << endl;
     }else if(segment=="static"){
     }else{
-      cout << segment <<endl;
+      fout << segment <<endl;
       assert(false);
     }
 
     if(segment=="static"){
-      cout << "@"+fileName+"."+to_string(index) << endl;
-      cout << "D=A" << endl;
+      fout << "@"+fileName+"."+to_string(index) << " //" << line++ << endl;
+      fout << "D=A" << " //" << line++ << endl;
     }else{
-      cout << "@"+to_string(index) << endl;
-      cout << "D=D+A" << endl;
+      fout << "@"+to_string(index) << " //" << line++ << endl;
+      fout << "D=D+A" << " //" << line++ << endl;
     }
 
-    cout << "@address" << endl;
-    cout << "M=D" << endl;
+    fout << "@address" << " //" << line++ << endl;
+    fout << "M=D" << " //" << line++ << endl;
 
-    cout << "@data" << endl;
-    cout << "D=M" << endl;
+    fout << "@data" << " //" << line++ << endl;
+    fout << "D=M" << " //" << line++ << endl;
 
-    cout << "@address" << endl;
-    cout << "A=M" << endl;
-    cout << "M=D" << endl;
+    fout << "@address" << " //" << line++ << endl;
+    fout << "A=M" << " //" << line++ << endl;
+    fout << "M=D" << " //" << line++ << endl;
 
   }else{
     assert(false);
     //abort();
   }
 
-  // cout << command <<endl;
-  // cout << segment <<endl;
-  // cout << index <<endl;
+  // fout << command <<endl;
+  // fout << segment <<endl;
+  // fout << index <<endl;
 }
 
 void CommandWriter::writeLabel(string label){
-  cout << "("+label+")" << endl;
+  fout << "("+label+")" << " //" << line++ << endl;
 }
 void CommandWriter::writeGoto(string label){
-  cout << "@"+label << endl;
-  cout << "0;JMP" << endl;
+  fout << "@"+label << " //" << line++ << endl;
+  fout << "0;JMP" << " //" << line++ << endl;
 }
 void CommandWriter::writeIf(string label){
-  popD();
+  popD(fout,line);
 
-  cout << "@"+label << endl;
-  cout << "D;JNE" << endl;
+  fout << "@"+label << " //" << line++ << endl;
+  fout << "D;JNE" << " //" << line++ << endl;
 }
 void CommandWriter::writeInit(){
-
+  fout << "@256" <<endl;
+  fout << "D=A"<<endl;
+  fout << "@SP" <<endl;
+  fout << "M=D"<<endl;
+  writeCall("Sys.init",0);
 }
 void CommandWriter::writeCall(string functionName,int numLocals){
   static int cnt=0;
   string r_address="return-address"+to_string(cnt++);
-  cout << "@"+r_address << endl;
-  cout << "D=A" << endl;
-  pushD();
+  fout << "@"+r_address << " //" << line++ << endl;
+  fout << "D=A" << " //" << line++ << endl;
+  pushD(fout,line);
 
-  cout << "@LCL" << endl;
-  cout << "D=M" << endl;
-  pushD();
-  cout << "@ARG" << endl;
-  cout << "D=M" << endl;
-  pushD();
-  cout << "@THIS" << endl;
-  cout << "D=M" << endl;
-  pushD();
-  cout << "@THAT" << endl;
-  cout << "D=M" << endl;
-  pushD();
+  fout << "@LCL" << " //" << line++ << endl;
+  fout << "D=M" << " //" << line++ << endl;
+  pushD(fout,line);
+  fout << "@ARG" << " //" << line++ << endl;
+  fout << "D=M" << " //" << line++ << endl;
+  pushD(fout,line);
+  fout << "@THIS" << " //" << line++ << endl;
+  fout << "D=M" << " //" << line++ << endl;
+  pushD(fout,line);
+  fout << "@THAT" << " //" << line++ << endl;
+  fout << "D=M" << " //" << line++ << endl;
+  pushD(fout,line);
 
-  cout << "@SP" << endl;
-  cout << "D=M" << endl;
-  cout << "@" + to_string(numLocals) << endl;
-  cout << "D=D-A" << endl;
-  cout << "@5" << endl;
-  cout << "D=D-A" <<" //ARG=SP-n-5"<< endl;
-  cout << "@ARG" << endl;
-  cout << "M=D" << endl;
+  fout << "@SP" << " //" << line++ << endl;
+  fout << "D=M" << " //" << line++ << endl;
+  fout << "@" + to_string(numLocals) << " //" << line++ << endl;
+  fout << "D=D-A" << " //" << line++ << endl;
+  fout << "@5" << " //" << line++ << endl;
+  fout << "D=D-A" <<" //ARG=SP-n-5"<< " //" << line++ << endl;
+  fout << "@ARG" << " //" << line++ << endl;
+  fout << "M=D" << " //" << line++ << endl;
 
-  cout << "@SP" << endl;
-  cout << "D=M" << endl;
-  cout << "@LCL" << endl;
-  cout << "M=D" << endl;
+  fout << "@SP" << " //" << line++ << endl;
+  fout << "D=M" << " //" << line++ << endl;
+  fout << "@LCL" << " //" << line++ << endl;
+  fout << "M=D" << " //" << line++ << endl;
   writeGoto(functionName);
   writeLabel(r_address);
 }
 void CommandWriter::writeReturn(){
-  cout << "@LCL" << endl;
-  cout << "D=M" << endl;//Address
-  cout << "@FRAME" << endl;
-  cout << "M=D" << endl;
+  fout << "@LCL" << " //" << line++ << endl;
+  fout << "D=M" << " //" << line++ << endl;//Address
+  fout << "@FRAME" << " //" << line++ << endl;
+  fout << "M=D" << " //" << line++ << endl;
 
-  cout << "@5" << endl;
-  cout << "A=D-A" << " //RET=*(FRAME-5)" << endl;
-  cout << "D=M" << endl;
-  cout << "@RET" << " //return address 126?" <<endl;
-  cout << "M=D" << endl;
+  fout << "@5" << " //" << line++ << endl;
+  fout << "A=D-A" << " //RET=*(FRAME-5)" << " //" << line++ << endl;
+  fout << "D=M" << " //" << line++ << endl;
+  fout << "@RET" << " //return address 126?" <<endl;
+  fout << "M=D" << " //" << line++ << endl;
 
   //*ARG=pop()
-  popD();
-  cout << "@ARG" << endl;
-  cout << "A=M" << endl;
-  cout << "M=D" << endl;
+  popD(fout,line);
+  fout << "@ARG" << " //" << line++ << endl;
+  fout << "A=M" << " //" << line++ << endl;
+  fout << "M=D" << " //" << line++ << endl;
 
-  cout << "@ARG" << endl;
-  cout << "D=M+1" << endl;
-  cout << "@SP" << endl;
-  cout << "M=D" << endl;//SP=ARG+1
+  fout << "@ARG" << " //" << line++ << endl;
+  fout << "D=M+1" << " //" << line++ << endl;
+  fout << "@SP" << " //" << line++ << endl;
+  fout << "M=D" << " //" << line++ << endl;//SP=ARG+1
 
-  cout << "@FRAME" << endl;
-  cout << "D=M" << endl;
-  cout << "@1" << endl;
-  cout << "A=D-A" << endl;
-  cout << "D=M" << endl;
-  cout << "@THAT" << endl;//THAT=*(FRAME-1)
-  cout << "M=D" << endl;
+  fout << "@FRAME" << " //" << line++ << endl;
+  fout << "D=M" << " //" << line++ << endl;
+  fout << "@1" << " //" << line++ << endl;
+  fout << "A=D-A" << " //" << line++ << endl;
+  fout << "D=M" << " //" << line++ << endl;
+  fout << "@THAT" << " //" << line++ << endl;//THAT=*(FRAME-1)
+  fout << "M=D" << " //" << line++ << endl;
 
-  cout << "@FRAME" << endl;
-  cout << "D=M" << endl;
-  cout << "@2" << endl;
-  cout << "A=D-A" << endl;
-  cout << "D=M" << endl;
-  cout << "@THIS" << endl;//THIS=*(FRAME-2)
-  cout << "M=D" << endl;
+  fout << "@FRAME" << " //" << line++ << endl;
+  fout << "D=M" << " //" << line++ << endl;
+  fout << "@2" << " //" << line++ << endl;
+  fout << "A=D-A" << " //" << line++ << endl;
+  fout << "D=M" << " //" << line++ << endl;
+  fout << "@THIS" << " //" << line++ << endl;//THIS=*(FRAME-2)
+  fout << "M=D" << " //" << line++ << endl;
 
-  cout << "@FRAME" << endl;
-  cout << "D=M" << endl;
-  cout << "@3" << endl;
-  cout << "A=D-A" << endl;
-  cout << "D=M" << endl;
-  cout << "@ARG" << endl;//ARG=*(FRAME-3)
-  cout << "M=D" << endl;
+  fout << "@FRAME" << " //" << line++ << endl;
+  fout << "D=M" << " //" << line++ << endl;
+  fout << "@3" << " //" << line++ << endl;
+  fout << "A=D-A" << " //" << line++ << endl;
+  fout << "D=M" << " //" << line++ << endl;
+  fout << "@ARG" << " //" << line++ << endl;//ARG=*(FRAME-3)
+  fout << "M=D" << " //" << line++ << endl;
 
-  cout << "@FRAME" << endl;
-  cout << "D=M" << endl;
-  cout << "@4" << endl;
-  cout << "A=D-A" << endl;
-  cout << "D=M" << endl;
-  cout << "@LCL" << endl;//LCL=*(FRAME-4)
-  cout << "M=D" << endl;
+  fout << "@FRAME" << " //" << line++ << endl;
+  fout << "D=M" << " //" << line++ << endl;
+  fout << "@4" << " //" << line++ << endl;
+  fout << "A=D-A" << " //" << line++ << endl;
+  fout << "D=M" << " //" << line++ << endl;
+  fout << "@LCL" << " //" << line++ << endl;//LCL=*(FRAME-4)
+  fout << "M=D" << " //" << line++ << endl;
 
-  cout << "@RET" << endl;
-  cout << "A=M" << endl;
-  cout << "0;JMP" << endl;
+  fout << "@RET" << " //" << line++ << endl;
+  fout << "A=M" << " //" << line++ << endl;
+  fout << "0;JMP" << " //" << line++ << endl;
 }
 void CommandWriter::writeFunction(string functionName,int numLocals){
   writeLabel(functionName);

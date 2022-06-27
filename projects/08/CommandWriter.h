@@ -4,7 +4,8 @@
 using namespace std;
 
 class CommandWriter{
-  ostream &os;
+  ostream &fout;
+  int line=0;
   string fileName;
  public:
   CommandWriter(ostream &outputStream);

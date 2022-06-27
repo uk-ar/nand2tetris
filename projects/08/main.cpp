@@ -1,30 +1,38 @@
 #include <iostream>
 #include <fstream>
+#include <filesystem>
+#include <dirent.h>
+#include <sys/stat.h>
 using namespace std;
 #include "Parser.h"
 #include "CommandWriter.h"
+namespace fs=std::filesystem;
 
-int main(int argc, char *argv[])
-{
-  if(argc!=2){
-    cout<<"usage:"+string(argv[0])+" input.asm"<<endl;
-    exit(-1);
-  }
-  ifstream fin{string(argv[1])};
+string stripExt(string s){
+  string::size_type pos;
+  if((pos=s.find_last_of("."))==string::npos)
+    return s;
+  return s.substr(0,pos);
+}
+
+string getExt(string s){
+  string::size_type pos;
+  if((pos=s.find_last_of("."))==string::npos)
+    return s;
+  return s.substr(pos);
+}
+
+void parseFile(string fileName,CommandWriter *c,ofstream &fout){
+  ifstream fin{fileName};
   if(!static_cast<bool>(fin)){
-    cout << "cannot open file '"+string(argv[1]) <<"'"<<endl;
+    cout << "cannot open file '"+fileName <<"'"<<endl;
     exit(-1);
   }
+
   Parser *p=new Parser(fin);
-  string fileName=string(argv[1])+".asm";
-  ofstream fout{fileName};
-  CommandWriter *c=new CommandWriter(fout);
   c->setFileName(fileName);
-  int cnt=0;
-  int offset=16;
-  p=new Parser(fin);
   while(p->hasMoreCommands()){
-    cout << "// "+ p->m_inst << endl;
+    fout << "// "+ p->m_inst << endl;
     // cout << string(p->m_inst.size(),'_') << endl;
     if(p->commandType()==C_ARITHMETIC){
       c->writeArithmetic(p->arg1());
@@ -48,6 +56,52 @@ int main(int argc, char *argv[])
     // cout << p->m_VMcomType << endl;
     // cout << p->m_arg1 << endl;
     p->advance();
+  }
+}
+int main(int argc, char *argv[])
+{
+  if(argc!=2){
+    cout<<"usage:"<<endl;
+    cout << string(argv[0])+" source_file"<<endl;
+    cout << string(argv[0])+" source_directory"<<endl;
+    exit(-1);
+  }
+  struct stat sb;
+  stat(argv[1],&sb);
+  if(!S_ISREG(sb.st_mode) and !S_ISDIR(sb.st_mode)){
+    cout << string(argv[1])+" is not regularfile or directory"<<endl;
+    exit(-1);
+  }
+
+  if(S_ISREG(sb.st_mode)){
+    string ofileName=string(stripExt(argv[1]))+".asm";
+    ofstream fout{ofileName};
+    CommandWriter *c=new CommandWriter(fout);
+    c->writeInit();
+
+    parseFile(string(argv[1]),c,fout);
+  }else{
+    DIR*dp;
+    dp=opendir(argv[1]);
+    string path=string(argv[1]);
+    if(path.back()=='/')
+      path.pop_back();
+    fs::path p=path;
+    dirent*entry = readdir(dp);
+    p/=p.filename().string()+".asm";
+    ofstream fout{p.string()};
+    CommandWriter *c=new CommandWriter(fout);
+    c->writeInit();
+
+    while(entry!=NULL){
+      if(entry!=NULL){
+        if(getExt(string(entry->d_name))==".vm"){
+          cout<< path+"/"+entry->d_name <<endl;
+          parseFile(path+"/"+entry->d_name,c,fout);
+        }
+      }
+      entry=readdir(dp);
+    }
   }
   return 0;
 }
