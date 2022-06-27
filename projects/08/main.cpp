@@ -36,6 +36,12 @@ int main(int argc, char *argv[])
       c->writeGoto(p->arg1());
     }else if(p->commandType()==C_IF){
       c->writeIf(p->arg1());
+    }else if(p->commandType()==C_CALL){
+      c->writeCall(p->arg1(),p->arg2());
+    }else if(p->commandType()==C_FUNCTION){
+      c->writeFunction(p->arg1(),p->arg2());
+    }else if(p->commandType()==C_RETURN){
+      c->writeReturn();
     }
     // cout << p->m_inst << endl;
     // cout << p->m_command << endl;
