@@ -90,7 +90,7 @@ void getFromSegment(string segment,int index,string &fileName,ostream &fout,int 
     return;
   }else if(segment=="static"){
     fout << "@"+fileName+"."+to_string(index) << " //" << line++ << endl;
-    fout << "D=A" << " //" << line++ << endl;
+    fout << "D=M" << " //" << line++ << endl;
     return;
   }else if(segment=="local"){
     fout << "@LCL" << " //" << line++ << endl;
@@ -259,7 +259,7 @@ void CommandWriter::writeReturn(){
   fout << "@5" << " //" << line++ << endl;
   fout << "A=D-A" << " //RET=*(FRAME-5)" << " //" << line++ << endl;
   fout << "D=M" << " //" << line++ << endl;
-  fout << "@RET" << " //return address 126?" <<endl;
+  fout << "@RET" << " //return address " << " //" << line++  <<endl;
   fout << "M=D" << " //" << line++ << endl;
 
   //*ARG=pop()
