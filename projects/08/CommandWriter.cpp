@@ -8,7 +8,7 @@ CommandWriter::CommandWriter(ostream &outputStream):fout(outputStream),line(0){
 
 }
 void CommandWriter::setFileName(string fileName){
-
+  this->fileName=fileName;
 }
 
 void arg1(string command,ostream &fout,int &line){
@@ -90,7 +90,7 @@ void getFromSegment(string segment,int index,string &fileName,ostream &fout,int 
     return;
   }else if(segment=="static"){
     fout << "@"+fileName+"."+to_string(index) << " //" << line++ << endl;
-    fout << "D=M" << " //" << line++ << endl;
+    fout << "D=A" << " //" << line++ << endl;
     return;
   }else if(segment=="local"){
     fout << "@LCL" << " //" << line++ << endl;
@@ -195,7 +195,7 @@ void CommandWriter::writePushPop(VMcomType command,string segment,int index){
 }
 
 void CommandWriter::writeLabel(string label){
-  fout << "("+label+")" << " //" << line++ << endl;
+  fout << "("+label+")" << endl;
 }
 void CommandWriter::writeGoto(string label){
   fout << "@"+label << " //" << line++ << endl;
@@ -208,10 +208,10 @@ void CommandWriter::writeIf(string label){
   fout << "D;JNE" << " //" << line++ << endl;
 }
 void CommandWriter::writeInit(){
-  fout << "@256" <<endl;
-  fout << "D=A"<<endl;
-  fout << "@SP" <<endl;
-  fout << "M=D"<<endl;
+  fout << "@256" << " //" << line++ <<endl;
+  fout << "D=A" << " //" << line++ <<endl;
+  fout << "@SP" << " //" << line++ <<endl;
+  fout << "M=D" << " //" << line++ <<endl;
   writeCall("Sys.init",0);
 }
 void CommandWriter::writeCall(string functionName,int numLocals){
@@ -313,7 +313,6 @@ void CommandWriter::writeFunction(string functionName,int numLocals){
   writeLabel(functionName);
   for(int i=0;i<numLocals;i++){
     writePushPop(C_PUSH,"constant",0);
-    writePushPop(C_POP,"local",i);
   }
 }
 void CommandWriter::close(){

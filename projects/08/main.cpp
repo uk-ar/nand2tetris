@@ -29,8 +29,11 @@ void parseFile(string fileName,CommandWriter *c,ofstream &fout){
     exit(-1);
   }
 
+  fs::path q=fileName;
+  //cout << q.stem().string() <<endl;
   Parser *p=new Parser(fin);
-  c->setFileName(fileName);
+  c->setFileName(q.stem().string());
+
   while(p->hasMoreCommands()){
     fout << "// "+ p->m_inst << endl;
     // cout << string(p->m_inst.size(),'_') << endl;
@@ -87,12 +90,12 @@ int main(int argc, char *argv[])
     if(path.back()=='/')
       path.pop_back();
     fs::path p=path;
-    dirent*entry = readdir(dp);
     p/=p.filename().string()+".asm";
     ofstream fout{p.string()};
     CommandWriter *c=new CommandWriter(fout);
     c->writeInit();
 
+    dirent*entry = readdir(dp);
     while(entry!=NULL){
       if(entry!=NULL){
         if(getExt(string(entry->d_name))==".vm"){
