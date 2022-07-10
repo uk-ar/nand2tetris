@@ -7,7 +7,7 @@ CFLAGS    = -D_GLIBCXX_DEBUG -ftrapv -std=c++17 -Wall -Wextra -g
 # (3)実行ファイル名
 TARGET  = VMtranslator
 # (4)コンパイル対象のソースコード
-SRCS    = CompilationEngine.cpp JackTokenizer.cpp JackAnalyzer.cpp SymbolTable.cpp
+SRCS    = CompilationEngine.cpp JackTokenizer.cpp JackAnalyzer.cpp SymbolTable.cpp VMWriter.cpp
 # (5)オブジェクトファイル名
 OBJS    = $(SRCS:.cpp=.o)
 

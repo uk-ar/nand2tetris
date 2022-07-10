@@ -1,8 +1,13 @@
+#ifndef VMWRITER_H
+#define VMWRITER_H
+
 #include <string>
-#include <unordered_set>
 #include <unordered_map>
 #include "Types.h"
+#include "JackTokenizer.h"
+#include "SymbolTable.h"
 using namespace std;
+
 enum Segment{
   S_CONST,
   S_ARG,
@@ -24,10 +29,11 @@ enum Command{
   C_OR,
   C_NOT
 };
+
 class VMWriter{
-public:
-  VMWriter();
-  virtual ~VMWriter();
+ public:
+  ostream &fout;
+  VMWriter(ostream &outputStream);
   void writePush(Segment segment,int index);
   void writePop(Segment segment,int index);
   void writeArithmetic(Command command);
@@ -39,3 +45,4 @@ public:
   void writeReturn();
   void close();
 };
+#endif //VMWRITER_H

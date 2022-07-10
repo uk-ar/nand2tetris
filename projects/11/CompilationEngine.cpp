@@ -6,7 +6,7 @@
 using namespace std;
 
 // CompilationEngine::CompilationEngine(ostream &outputStream):fout(outputStream){
-CompilationEngine::CompilationEngine(istream &inputStream, ostream &outputStream) : fout(outputStream), fin(inputStream),t(new JackTokenizer(fin)),sym(new SymbolTable())
+CompilationEngine::CompilationEngine(istream &inputStream, ostream &outputStream) : fout(outputStream), fin(inputStream),t(new JackTokenizer(fin)),sym(new SymbolTable()),v(new VMWriter(outputStream))//v(new VMWriter(outputStream))
 {
 
 }
@@ -28,6 +28,7 @@ void CompilationEngine::compileClass()
 {
   fout << "<class>" << endl;
   printToken(fout, t); // class
+  className=t->token;
   printId(fout, t, "class", true, K_NONE);// className
   printToken(fout, t); //{
   compileClassVarDec();
@@ -70,13 +71,16 @@ void CompilationEngine::compileSubroutine()
     sym->startSubroutine();
     printToken(fout, t); // constructor, fuction, method
     printToken(fout, t); // type
+    string subroutineName=t->token;
     printId(fout, t, "subroutine" ,true,K_NONE);// subroutineName
     printToken(fout, t); //(
     compileParameterList();
     printToken(fout, t); //)
     fout << "<subroutineBody>" << endl;
     printToken(fout, t); //{
+    int pre=sym->varCount(K_VAR);
     compileVarDec();
+    v->writeFunction(className+"."+subroutineName,sym->varCount(K_VAR) - pre);
     fout << "<statements>" << endl;
     compileStatement();
     fout << "</statements>" << endl;
@@ -86,18 +90,20 @@ void CompilationEngine::compileSubroutine()
     compileSubroutine();
   }
 }
-void CompilationEngine::compileParameterList()
+int CompilationEngine::compileParameterList()
 {
   fout << "<parameterList>" << endl;
+  int params=0;
   if (t->TokenType() != KEYWORD and t->TokenType() != IDENTIFIER)
   {
     fout << "</parameterList>" << endl;
-    return;
+    return params;
   }
   string type=t->token;
   printToken(fout, t); // type
   sym->define(t->token,type,K_ARG);
   printId(fout, t, "argument" ,true,K_ARG);// varName
+  params++;
   while (t->TokenType() == SYMBOL and t->symbol() == ',')
   {
     printToken(fout, t); //,
@@ -105,19 +111,24 @@ void CompilationEngine::compileParameterList()
     printToken(fout, t); // type
     sym->define(t->token,type,K_ARG);
     printId(fout, t, "argument" ,true,K_ARG);// varName
+    params++;
   }
   fout << "</parameterList>" << endl;
+  return params;
 }
 void CompilationEngine::compileVarDec()
 {
   if (t->TokenType() != KEYWORD)
     return;
+  string ans;
   if (t->keyWord() == VAR)
   {
     fout << "<varDec>" << endl;
     printToken(fout, t); // var
     string type=t->token;
     printToken(fout, t); // type
+    // v->writePush(S_CONST,0);
+    // v->writePop(S_LOCAL,sym->varCount(K_VAR));
     sym->define(t->token,type,K_VAR);
     printId(fout, t, "var" ,true,K_VAR);// varName
     while (t->TokenType() == SYMBOL and t->symbol() == ',')
@@ -159,6 +170,7 @@ void CompilationEngine::compileStatement()
       printToken(fout, t); // return
       if (not(t->TokenType() == SYMBOL and t->symbol() == ';'))
         compileExpression(); // expression
+      v->writeReturn();
       printToken(fout, t);   //;
       fout << "</returnStatement>" << endl;
     }
@@ -179,20 +191,28 @@ void CompilationEngine::compileDo()
 }
 void CompilationEngine::compileSubroutineCall()
 {
+  string fullName;
   if(t->peek()=='.'){//className or varName
     // method call
     if(sym->kindOf(t->token)==K_VAR){
       Kind k=sym->kindOf(t->token);
+      fullName=sym->typeOf(t->token);
       printId(fout, t, kindString[k] ,false,k);// varName
-    }else
-      printId(fout, t, "class" ,false,K_NONE);// className or varName
+      v->writePush(S_ARG,0);
+    }else{
+      fullName=t->token;
+      printId(fout, t, "class" ,false,K_NONE);// className
+    }
     printToken(fout, t); //.
   }
+  fullName+="."+t->token;
   printId(fout, t, "subroutine" ,false,K_NONE);// subroutinename
   printToken(fout, t); //(
-  compileExpressionList();
+  int args=compileExpressionList();
   printToken(fout, t); //)
+  v->writeCall(fullName,args);
 }
+unordered_map<Kind,Segment> k2s({{K_STATIC,S_STATIC},{K_ARG,S_ARG},{K_VAR,S_LOCAL}});
 void CompilationEngine::compileLet()
 {
   if (t->TokenType() != KEYWORD)
@@ -202,19 +222,31 @@ void CompilationEngine::compileLet()
     fout << "<letStatement>" << endl;
     printToken(fout, t); // let
     Kind k=sym->kindOf(t->token);
+    string varName=t->token;
     printId(fout, t, kindString[k] ,false,k);// varName
     if (t->TokenType() == SYMBOL and t->symbol() == '[')
-    {                      //[
+    {
+      v->writePush(k2s[k],sym->indexOf(varName));
       printToken(fout, t); //[
       compileExpression(); //
       printToken(fout, t); //]
+      v->writeArithmetic(C_ADD);
+      v->writePop(S_POINTER,1);//that
+      printToken(fout, t); //=
+      compileExpression(); //
+      v->writePop(S_THAT,0);//that
+      printToken(fout, t); //;
+    }else{
+      printToken(fout, t); //=
+      compileExpression(); //
+      if(k2s.count(k))
+        v->writePop(k2s[k],sym->indexOf(varName));
+      printToken(fout, t); //;
     }
-    printToken(fout, t); //=
-    compileExpression(); //
-    printToken(fout, t); //;
     fout << "</letStatement>" << endl;
   }
 }
+static int lid=0;
 void CompilationEngine::compileWhile()
 {
   if (t->TokenType() != KEYWORD)
@@ -222,14 +254,20 @@ void CompilationEngine::compileWhile()
   if (t->keyWord() == WHILE)
   {
     fout << "<whileStatement>" << endl;
+    v->writeLabel("L"+to_string(lid));
     printToken(fout, t); // while
     printToken(fout, t); //(
     compileExpression(); //
+    v->writeArithmetic(C_NEG);
+    v->writeIf("L"+to_string(lid+1));
     printToken(fout, t); //)
     printToken(fout, t); //{
     fout << "<statements>" << endl;
     compileStatement();
     fout << "</statements>" << endl;
+    v->writeGoto("L"+to_string(lid));
+    v->writeLabel("L"+to_string(lid+1));
+    lid+=2;
     printToken(fout, t); //}
     fout << "</whileStatement>" << endl;
   }
@@ -244,10 +282,13 @@ void CompilationEngine::compileIf()
     printToken(fout, t); // if
     printToken(fout, t); //(
     compileExpression(); //
+    v->writeArithmetic(C_NEG);
+    v->writeIf("L"+to_string(lid));
     printToken(fout, t); //)
     printToken(fout, t); //{
     fout << "<statements>" << endl;
     compileStatement();
+    v->writeGoto("L"+to_string(lid+1));
     fout << "</statements>" << endl;
     printToken(fout, t); //}
     if (t->TokenType() == KEYWORD and t->keyWord() == ELSE)
@@ -255,10 +296,15 @@ void CompilationEngine::compileIf()
       printToken(fout, t); // else
       printToken(fout, t); //{
       fout << "<statements>" << endl;
+      v->writeLabel("L"+to_string(lid));
       compileStatement();
       fout << "</statements>" << endl;
       printToken(fout, t); //}
+    }else{
+      v->writeLabel("L"+to_string(lid));
     }
+    v->writeLabel("L"+to_string(lid+1));
+    lid+=2;
     fout << "</ifStatement>" << endl;
   }
 }
@@ -272,8 +318,15 @@ void CompilationEngine::compileExpression()
   compileTerm();
   while (t->TokenType() == SYMBOL and ops.count(t->symbol()))
   {
+    char op=t->symbol();
     printToken(fout, t); // op
     compileTerm();
+    if(op=='+')
+      v->writeArithmetic(C_ADD);
+    else if(op=='-')
+      v->writeArithmetic(C_SUB);
+    else if(op=='*')
+      v->writeCall("Math.multiply",2);
   }
   fout << "</expression>" << endl;
 }
@@ -299,11 +352,24 @@ void CompilationEngine::compileTerm()
     {
       // var
       Kind k=sym->kindOf(t->token);
+      string varName=t->token;
+      v->writePush(k2s[k],sym->indexOf(varName));
       printId(fout, t, kindString[k] ,false,k);// varName
+
     }
   }
   else if (t->TokenType() == INT_CONST or t->TokenType() == STRING_CONST or t->TokenType() == KEYWORD)
   {
+    if(t->TokenType() == INT_CONST){
+      v->writePush(S_CONST,t->intVal());
+    }else if(t->TokenType() == KEYWORD){
+      if(t->keyWord()==TRUE){
+        v->writePush(S_CONST,1);
+        v->writeArithmetic(C_NEG);
+      }else if(t->keyWord()==K_NULL or t->keyWord()==FALSE){
+        v->writePush(S_CONST,0);
+      }
+    }
     printToken(fout, t);
   }
   else if (t->TokenType() == SYMBOL and t->symbol() == '(')
@@ -316,22 +382,27 @@ void CompilationEngine::compileTerm()
   {
     printToken(fout, t); //~ or -
     compileTerm();
+    v->writeArithmetic(C_NEG);
   }
   fout << "</term>" << endl;
 }
-void CompilationEngine::compileExpressionList()
+int CompilationEngine::compileExpressionList()
 {
+  int ans=0;
   fout << "<expressionList>" << endl;
   if (t->TokenType() == SYMBOL and (t->symbol() == ')'))
   {
     fout << "</expressionList>" << endl;
-    return;
+    return ans;
   }
   compileExpression();
+  ans++;
   while (t->TokenType() == SYMBOL and (t->symbol() == ','))
   {
     printToken(fout, t); //,
     compileExpression();
+    ans++;
   }
   fout << "</expressionList>" << endl;
+  return ans;
 }

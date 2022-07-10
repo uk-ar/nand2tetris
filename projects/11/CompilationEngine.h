@@ -3,6 +3,7 @@
 #include "Types.h"
 #include "JackTokenizer.h"
 #include "SymbolTable.h"
+#include "VMWriter.h"
 using namespace std;
 
 class CompilationEngine{
@@ -10,15 +11,18 @@ class CompilationEngine{
   istream &fin;
   int line=0;
   string fileName;
+  //
   JackTokenizer *t;
   SymbolTable *sym;
+  VMWriter *v;
+  string className;
  public:
   CompilationEngine(istream &inputStream, ostream &outputStream);
   //CompilationEngine(ostream &outputStream);
   void compileClass();
   void compileClassVarDec();
   void compileSubroutine();
-  void compileParameterList();
+  int compileParameterList();
   void compileVarDec();
   void compileStatement();
   void compileDo();
@@ -27,6 +31,6 @@ class CompilationEngine{
   void compileIf();
   void compileExpression();
   void compileTerm();
-  void compileExpressionList();
+  int compileExpressionList();
   void compileSubroutineCall();
 };

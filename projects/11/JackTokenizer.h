@@ -1,3 +1,6 @@
+#ifndef JACKTOKENIZER_H
+#define JACKTOKENIZER_H
+
 #include <string>
 #include <unordered_set>
 #include <unordered_map>
@@ -31,3 +34,4 @@ class JackTokenizer{
 };
 extern vector<string> keywordStrings;
 string xmlescape(string s);
+#endif //JACKTOKENIZER_H

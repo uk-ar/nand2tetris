@@ -79,7 +79,7 @@ int main(int argc, char *argv[])
 
   if(S_ISREG(sb.st_mode)){
     //string ofileName=string(stripExt(argv[1]))+"T.xml";
-    string ofileName=string(stripExt(argv[1]))+".xml";
+    string ofileName=string(stripExt(argv[1]))+".vm";
     ofstream fout{ofileName};
 
     compileFile(string(argv[1]),fout);
@@ -97,7 +97,7 @@ int main(int argc, char *argv[])
         if(getExt(string(entry->d_name))==".jack"){
           cout<< path+"/"+entry->d_name <<endl;
           //string ofileName=stripExt(path+"/"+entry->d_name)+"T.xml";
-          string ofileName=stripExt(path+"/"+entry->d_name)+".xml";
+          string ofileName=stripExt(path+"/"+entry->d_name)+".vm";
           ofstream fout{ofileName};
           cout<< ofileName <<endl;
           compileFile(path+"/"+entry->d_name,fout);
