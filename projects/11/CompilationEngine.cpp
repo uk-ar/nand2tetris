@@ -6,7 +6,7 @@
 using namespace std;
 
 // CompilationEngine::CompilationEngine(ostream &outputStream):fout(outputStream){
-CompilationEngine::CompilationEngine(istream &inputStream, ostream &outputStream) : fout(outputStream), fin(inputStream),t(new JackTokenizer(fin)),sym(new SymbolTable()),v(new VMWriter(outputStream))//v(new VMWriter(outputStream))
+CompilationEngine::CompilationEngine(istream &inputStream, ostream &outputStream) : fin(inputStream),t(new JackTokenizer(fin)),sym(new SymbolTable()),v(new VMWriter(outputStream)),fout(cout)//v(new VMWriter(outputStream))
 {
 
 }
@@ -254,20 +254,21 @@ void CompilationEngine::compileWhile()
   if (t->keyWord() == WHILE)
   {
     fout << "<whileStatement>" << endl;
-    v->writeLabel("L"+to_string(lid));
+    int l1=lid++;
+    v->writeLabel("L"+to_string(l1));
     printToken(fout, t); // while
     printToken(fout, t); //(
     compileExpression(); //
-    v->writeArithmetic(C_NEG);
-    v->writeIf("L"+to_string(lid+1));
+    v->writeArithmetic(C_NOT);
+    int l2=lid++;
+    v->writeIf("L"+to_string(l2));
     printToken(fout, t); //)
     printToken(fout, t); //{
     fout << "<statements>" << endl;
     compileStatement();
     fout << "</statements>" << endl;
-    v->writeGoto("L"+to_string(lid));
-    v->writeLabel("L"+to_string(lid+1));
-    lid+=2;
+    v->writeGoto("L"+to_string(l1));
+    v->writeLabel("L"+to_string(l2));
     printToken(fout, t); //}
     fout << "</whileStatement>" << endl;
   }
@@ -282,13 +283,15 @@ void CompilationEngine::compileIf()
     printToken(fout, t); // if
     printToken(fout, t); //(
     compileExpression(); //
-    v->writeArithmetic(C_NEG);
-    v->writeIf("L"+to_string(lid));
+    v->writeArithmetic(C_NOT);
+    int l1=lid++;
+    v->writeIf("L"+to_string(l1));
     printToken(fout, t); //)
     printToken(fout, t); //{
     fout << "<statements>" << endl;
     compileStatement();
-    v->writeGoto("L"+to_string(lid+1));
+    int l2=lid++;
+    v->writeGoto("L"+to_string(l2));
     fout << "</statements>" << endl;
     printToken(fout, t); //}
     if (t->TokenType() == KEYWORD and t->keyWord() == ELSE)
@@ -296,15 +299,14 @@ void CompilationEngine::compileIf()
       printToken(fout, t); // else
       printToken(fout, t); //{
       fout << "<statements>" << endl;
-      v->writeLabel("L"+to_string(lid));
+      v->writeLabel("L"+to_string(l1));
       compileStatement();
       fout << "</statements>" << endl;
       printToken(fout, t); //}
     }else{
-      v->writeLabel("L"+to_string(lid));
+      v->writeLabel("L"+to_string(l1));
     }
-    v->writeLabel("L"+to_string(lid+1));
-    lid+=2;
+    v->writeLabel("L"+to_string(l2));
     fout << "</ifStatement>" << endl;
   }
 }
@@ -327,6 +329,18 @@ void CompilationEngine::compileExpression()
       v->writeArithmetic(C_SUB);
     else if(op=='*')
       v->writeCall("Math.multiply",2);
+    else if(op=='/')
+      v->writeCall("Math.divide",2);
+    else if(op=='>')
+      v->writeArithmetic(C_GT);
+    else if(op=='<')
+      v->writeArithmetic(C_LT);
+    else if(op=='&')
+      v->writeArithmetic(C_AND);
+    else if(op=='|')
+      v->writeArithmetic(C_OR);
+    else if(op=='=')
+      v->writeArithmetic(C_EQ);
   }
   fout << "</expression>" << endl;
 }
@@ -378,11 +392,17 @@ void CompilationEngine::compileTerm()
     compileExpression();
     printToken(fout, t); //)
   }
-  else if (t->TokenType() == SYMBOL and (t->symbol() == '~' or t->symbol() == '-'))
+  else if (t->TokenType() == SYMBOL and t->symbol() == '-')
   {
-    printToken(fout, t); //~ or -
+    printToken(fout, t); //-
     compileTerm();
     v->writeArithmetic(C_NEG);
+  }
+  else if (t->TokenType() == SYMBOL and t->symbol() == '~')
+  {
+    printToken(fout, t); //~
+    compileTerm();
+    v->writeArithmetic(C_NOT);
   }
   fout << "</term>" << endl;
 }
