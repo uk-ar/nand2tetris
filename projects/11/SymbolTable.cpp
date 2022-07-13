@@ -26,6 +26,7 @@ void SymbolTable::startSubroutine()
 }
 
 void SymbolTable::define(string name,string type,Kind kind){
+  //cerr << name <<","<< type <<","<< kindString[kind]<<endl;
   if(kind==K_STATIC or kind==K_FIELD){
     classK[name]=kind;
     classT[name]=type;

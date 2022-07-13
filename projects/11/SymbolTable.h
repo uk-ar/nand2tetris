@@ -6,13 +6,7 @@
 #ifndef SYMBOLTABLE_H
 #define SYMBOLTABLE_H
 using namespace std;
-enum Kind{
-  K_STATIC,
-  K_FIELD,
-  K_ARG,
-  K_VAR,
-  K_NONE
-};
+
 extern vector<string> kindString;
 class SymbolTable{
   unordered_map<string,Kind>classK;

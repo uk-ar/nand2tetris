@@ -8,28 +8,6 @@
 #include "SymbolTable.h"
 using namespace std;
 
-enum Segment{
-  S_CONST,
-  S_ARG,
-  S_LOCAL,
-  S_STATIC,
-  S_THIS,
-  S_THAT,
-  S_POINTER,
-  S_TEMP
-};
-enum Command{
-  C_ADD,
-  C_SUB,
-  C_NEG,
-  C_EQ,
-  C_GT,
-  C_LT,
-  C_AND,
-  C_OR,
-  C_NOT
-};
-
 class VMWriter{
  public:
   ostream &fout;

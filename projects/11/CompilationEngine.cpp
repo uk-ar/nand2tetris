@@ -6,7 +6,7 @@
 using namespace std;
 
 // CompilationEngine::CompilationEngine(ostream &outputStream):fout(outputStream){
-CompilationEngine::CompilationEngine(istream &inputStream, ostream &outputStream) : fin(inputStream),t(new JackTokenizer(fin)),sym(new SymbolTable()),v(new VMWriter(outputStream)),fout(cout)//v(new VMWriter(outputStream))
+CompilationEngine::CompilationEngine(istream &inputStream, ostream &outputStream,ostream &debugStream) : fin(inputStream),t(new JackTokenizer(fin)),sym(new SymbolTable()),v(new VMWriter(outputStream)),fout(debugStream)
 {
 
 }
@@ -67,6 +67,7 @@ void CompilationEngine::compileSubroutine()
     return;
   if (t->keyWord() == CONSTRUCTOR or t->keyWord() == FUNCTION or t->keyWord() == METHOD)
   {
+    KeywordType keyWord=t->keyWord();
     fout << "<subroutineDec>" << endl;
     sym->startSubroutine();
     printToken(fout, t); // constructor, fuction, method
@@ -74,13 +75,23 @@ void CompilationEngine::compileSubroutine()
     string subroutineName=t->token;
     printId(fout, t, "subroutine" ,true,K_NONE);// subroutineName
     printToken(fout, t); //(
+    if(keyWord==METHOD)
+      sym->define("this","class",K_ARG);
     compileParameterList();
     printToken(fout, t); //)
     fout << "<subroutineBody>" << endl;
     printToken(fout, t); //{
     int pre=sym->varCount(K_VAR);
     compileVarDec();
+    if(keyWord==CONSTRUCTOR)
+      sym->define("this","class",K_VAR);
     v->writeFunction(className+"."+subroutineName,sym->varCount(K_VAR) - pre);
+    if(keyWord==CONSTRUCTOR){
+      v->writePush(S_CONST,sym->varCount(K_FIELD));
+      v->writeCall("Memory.alloc", 1);
+      v->writePop(S_LOCAL,sym->indexOf("this"));
+      //this=alloc(n)
+    }
     fout << "<statements>" << endl;
     compileStatement();
     fout << "</statements>" << endl;
@@ -90,20 +101,18 @@ void CompilationEngine::compileSubroutine()
     compileSubroutine();
   }
 }
-int CompilationEngine::compileParameterList()
+void CompilationEngine::compileParameterList()
 {
   fout << "<parameterList>" << endl;
-  int params=0;
   if (t->TokenType() != KEYWORD and t->TokenType() != IDENTIFIER)
   {
     fout << "</parameterList>" << endl;
-    return params;
+    return;
   }
   string type=t->token;
   printToken(fout, t); // type
   sym->define(t->token,type,K_ARG);
   printId(fout, t, "argument" ,true,K_ARG);// varName
-  params++;
   while (t->TokenType() == SYMBOL and t->symbol() == ',')
   {
     printToken(fout, t); //,
@@ -111,10 +120,9 @@ int CompilationEngine::compileParameterList()
     printToken(fout, t); // type
     sym->define(t->token,type,K_ARG);
     printId(fout, t, "argument" ,true,K_ARG);// varName
-    params++;
   }
   fout << "</parameterList>" << endl;
-  return params;
+  return;
 }
 void CompilationEngine::compileVarDec()
 {
@@ -155,14 +163,17 @@ void CompilationEngine::compileStatement()
     else if (t->keyWord() == IF)
     {
       compileIf();
+      //v->writePop(S_TEMP,0);
     }
     else if (t->keyWord() == WHILE)
     {
       compileWhile();
+      //v->writePop(S_TEMP,0);
     }
     else if (t->keyWord() == DO)
     {
       compileDo();
+      v->writePop(S_TEMP,0);
     }
     else if (t->keyWord() == RETURN)
     {
@@ -189,30 +200,49 @@ void CompilationEngine::compileDo()
     fout << "</doStatement>" << endl;
   }
 }
+unordered_map<Kind,Segment> k2s({{K_STATIC,S_STATIC},{K_ARG,S_ARG},{K_VAR,S_LOCAL}});
 void CompilationEngine::compileSubroutineCall()
 {
   string fullName;
+  int args=0;
   if(t->peek()=='.'){//className or varName
     // method call
-    if(sym->kindOf(t->token)==K_VAR){
+    if(sym->kindOf(t->token)==K_VAR or sym->kindOf(t->token)==K_FIELD){
       Kind k=sym->kindOf(t->token);
       fullName=sym->typeOf(t->token);
+      //fout << t->token <<":"<< sym->kindOf(t->token) <<endl;
+      if(k==K_FIELD){
+        v->writePush(k2s[sym->kindOf("this")],sym->indexOf("this"));//base address of class obj
+        v->writePop(S_POINTER,0);//"this" point class obj
+        // printToken(fout, t); //=
+        // compileExpression(); //
+        v->writePush(S_THIS,sym->indexOf(t->token));//"this" point class obj
+        // printToken(fout, t); //;
+        //v->writePush(k2s[sym->kindOf(t->token)],sym->indexOf(t->token));
+      }else{
+        v->writePush(k2s[sym->kindOf(t->token)],sym->indexOf(t->token));
+      }
       printId(fout, t, kindString[k] ,false,k);// varName
-      v->writePush(S_ARG,0);
+      //v->writePush(S_ARG,0);
+      args++;
     }else{
       fullName=t->token;
       printId(fout, t, "class" ,false,K_NONE);// className
     }
     printToken(fout, t); //.
+  }else{//method call
+    v->writePush(k2s[sym->kindOf("this")],sym->indexOf("this"));
+    fullName=className;
+    args++;
   }
   fullName+="."+t->token;
   printId(fout, t, "subroutine" ,false,K_NONE);// subroutinename
   printToken(fout, t); //(
-  int args=compileExpressionList();
+  args+=compileExpressionList();
   printToken(fout, t); //)
   v->writeCall(fullName,args);
 }
-unordered_map<Kind,Segment> k2s({{K_STATIC,S_STATIC},{K_ARG,S_ARG},{K_VAR,S_LOCAL}});
+
 void CompilationEngine::compileLet()
 {
   if (t->TokenType() != KEYWORD)
@@ -224,7 +254,7 @@ void CompilationEngine::compileLet()
     Kind k=sym->kindOf(t->token);
     string varName=t->token;
     printId(fout, t, kindString[k] ,false,k);// varName
-    if (t->TokenType() == SYMBOL and t->symbol() == '[')
+    if (t->TokenType() == SYMBOL and t->symbol() == '[')//array
     {
       v->writePush(k2s[k],sym->indexOf(varName));
       printToken(fout, t); //[
@@ -236,11 +266,18 @@ void CompilationEngine::compileLet()
       compileExpression(); //
       v->writePop(S_THAT,0);//that
       printToken(fout, t); //;
+    }else if(k==K_FIELD){//LVALUE
+      //this may K_VAR or K_ARG
+      v->writePush(k2s[sym->kindOf("this")],sym->indexOf("this"));//base address of class obj
+      v->writePop(S_POINTER,0);//"this" point class obj
+      printToken(fout, t); //=
+      compileExpression(); //
+      v->writePop(S_THIS,sym->indexOf(varName));//"this" point class obj
+      printToken(fout, t); //;
     }else{
       printToken(fout, t); //=
       compileExpression(); //
-      if(k2s.count(k))
-        v->writePop(k2s[k],sym->indexOf(varName));
+      v->writePop(k2s[k],sym->indexOf(varName));
       printToken(fout, t); //;
     }
     fout << "</letStatement>" << endl;
@@ -364,12 +401,22 @@ void CompilationEngine::compileTerm()
     }
     else
     {
+      // v->writePush(k2s[sym->kindOf("this")],sym->indexOf("this"));//base address of class obj
+      // v->writePop(S_POINTER,0);//"this" point class obj
+      // printToken(fout, t); //=
+      // compileExpression(); //
+      // v->writePop(S_THIS,sym->indexOf(varName));//"this" point class obj
+      // printToken(fout, t); //;
       // var
       Kind k=sym->kindOf(t->token);
       string varName=t->token;
-      v->writePush(k2s[k],sym->indexOf(varName));
+      if(k==K_FIELD){
+        v->writePush(k2s[sym->kindOf("this")],sym->indexOf("this"));//base address of class obj
+        v->writePop(S_POINTER,0);//"this" point class obj
+        v->writePush(S_THIS,sym->indexOf(varName));//"this" point class obj
+      }else
+        v->writePush(k2s[k],sym->indexOf(varName));
       printId(fout, t, kindString[k] ,false,k);// varName
-
     }
   }
   else if (t->TokenType() == INT_CONST or t->TokenType() == STRING_CONST or t->TokenType() == KEYWORD)
@@ -382,6 +429,10 @@ void CompilationEngine::compileTerm()
         v->writeArithmetic(C_NEG);
       }else if(t->keyWord()==K_NULL or t->keyWord()==FALSE){
         v->writePush(S_CONST,0);
+      }else if(t->keyWord()==THIS){
+        v->writePush(k2s[sym->kindOf("this")],sym->indexOf("this"));//base address of class obj"this"
+      }else{
+        assert(false);
       }
     }
     printToken(fout, t);

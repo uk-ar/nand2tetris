@@ -42,24 +42,16 @@ void parseFile(string fileName,ofstream &fout){
   fout << "</tokens>"<< endl;
 }
 
-void compileFile(string fileName,ofstream &fout){
+void compileFile(string inFileName,ofstream &fout,string doFileName){
 
-  ifstream fin{fileName};
+  ifstream fin{inFileName};
   if(!static_cast<bool>(fin)){
-    cout << "cannot open file '"+fileName <<"'"<<endl;
+    cout << "cannot open file '"+inFileName <<"'"<<endl;
     exit(-1);
   }
-
-  //cout << q.stem().string() <<endl;
-  //JackTokenizer *t=new JackTokenizer(fin);
-  CompilationEngine *c=new CompilationEngine(fin,fout);
+  ofstream debugOut{doFileName};
+  CompilationEngine *c=new CompilationEngine(fin,fout,debugOut);
   c->compileClass();
-  // fout << "<tokens>"<< endl;
-  // while(t->hasMoreTokens()){
-  //   fout << "<"+typeStrings[t->tokenType]+"> " << xmlescape(t->token) << " </"+typeStrings[t->tokenType]+">" << endl;
-  //   t->advance();
-  // }
-  // fout << "</tokens>"<< endl;
 }
 
 int main(int argc, char *argv[])
@@ -80,9 +72,10 @@ int main(int argc, char *argv[])
   if(S_ISREG(sb.st_mode)){
     //string ofileName=string(stripExt(argv[1]))+"T.xml";
     string ofileName=string(stripExt(argv[1]))+".vm";
+    string dofileName=string(stripExt(argv[1]))+".xml";
     ofstream fout{ofileName};
 
-    compileFile(string(argv[1]),fout);
+    compileFile(string(argv[1]),fout,dofileName);
     //parseFile(string(argv[1]),fout);
   }else{
     DIR*dp;
@@ -98,9 +91,10 @@ int main(int argc, char *argv[])
           cout<< path+"/"+entry->d_name <<endl;
           //string ofileName=stripExt(path+"/"+entry->d_name)+"T.xml";
           string ofileName=stripExt(path+"/"+entry->d_name)+".vm";
+          string dofileName=stripExt(path+"/"+entry->d_name)+".xml";
           ofstream fout{ofileName};
           cout<< ofileName <<endl;
-          compileFile(path+"/"+entry->d_name,fout);
+          compileFile(path+"/"+entry->d_name,fout,dofileName);
           //parseFile(path+"/"+entry->d_name,fout);
         }
       }

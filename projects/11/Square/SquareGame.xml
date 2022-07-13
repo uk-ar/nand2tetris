@@ -106,7 +106,7 @@ subroutine,defined,none
 <doStatement>
 <keyword> do </keyword>
 <identifier> square </identifier>
-class,used,none
+field,used,field
 <symbol> . </symbol>
 <identifier> dispose </identifier>
 subroutine,used,none
@@ -173,7 +173,7 @@ field,used,field
 <doStatement>
 <keyword> do </keyword>
 <identifier> square </identifier>
-class,used,none
+field,used,field
 <symbol> . </symbol>
 <identifier> moveUp </identifier>
 subroutine,used,none
@@ -205,7 +205,7 @@ field,used,field
 <doStatement>
 <keyword> do </keyword>
 <identifier> square </identifier>
-class,used,none
+field,used,field
 <symbol> . </symbol>
 <identifier> moveDown </identifier>
 subroutine,used,none
@@ -237,7 +237,7 @@ field,used,field
 <doStatement>
 <keyword> do </keyword>
 <identifier> square </identifier>
-class,used,none
+field,used,field
 <symbol> . </symbol>
 <identifier> moveLeft </identifier>
 subroutine,used,none
@@ -269,7 +269,7 @@ field,used,field
 <doStatement>
 <keyword> do </keyword>
 <identifier> square </identifier>
-class,used,none
+field,used,field
 <symbol> . </symbol>
 <identifier> moveRight </identifier>
 subroutine,used,none
@@ -460,7 +460,7 @@ var,used,var
 <doStatement>
 <keyword> do </keyword>
 <identifier> square </identifier>
-class,used,none
+field,used,field
 <symbol> . </symbol>
 <identifier> decSize </identifier>
 subroutine,used,none
@@ -492,7 +492,7 @@ var,used,var
 <doStatement>
 <keyword> do </keyword>
 <identifier> square </identifier>
-class,used,none
+field,used,field
 <symbol> . </symbol>
 <identifier> incSize </identifier>
 subroutine,used,none

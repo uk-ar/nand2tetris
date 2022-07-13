@@ -17,12 +17,12 @@ class CompilationEngine{
   VMWriter *v;
   string className;
  public:
-  CompilationEngine(istream &inputStream, ostream &outputStream);
+  CompilationEngine(istream &inputStream, ostream &outputStream,ostream &debugStream);
   //CompilationEngine(ostream &outputStream);
   void compileClass();
   void compileClassVarDec();
   void compileSubroutine();
-  int compileParameterList();
+  void compileParameterList();
   void compileVarDec();
   void compileStatement();
   void compileDo();
