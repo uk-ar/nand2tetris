@@ -6,7 +6,7 @@
 using namespace std;
 
 // CompilationEngine::CompilationEngine(ostream &outputStream):fout(outputStream){
-CompilationEngine::CompilationEngine(istream &inputStream, ostream &outputStream,ostream &debugStream) : fin(inputStream),t(new JackTokenizer(fin)),sym(new SymbolTable()),v(new VMWriter(outputStream)),fout(debugStream)
+CompilationEngine::CompilationEngine(istream &inputStream, ostream &outputStream,ostream &debugStream) : fin(inputStream),t(new JackTokenizer(fin)),sym(new SymbolTable()),fout(debugStream),v(new VMWriter(outputStream))
 {
 
 }
@@ -387,19 +387,24 @@ void CompilationEngine::compileTerm()
   if (t->TokenType() == IDENTIFIER)
   {
     char p = t->peek();
-    if (p == '.' or p == '(')
+    if (p == '.' or p == '(')//funcall
     {
       compileSubroutineCall();
     }
-    else if (t->peek() == '[')
+    else if (t->peek() == '[')//array
     {                      // array
-      Kind k=sym->kindOf(t->token);
+      Kind k=sym->kindOf(t->token);//that
+      string varName=t->token;
+      v->writePush(k2s[k],sym->indexOf(varName));
       printId(fout, t, kindString[k] ,false,k);// varName
       printToken(fout, t); //[
       compileExpression(); // expression
       printToken(fout, t); //]
+      v->writeArithmetic(C_ADD);
+      v->writePop(S_POINTER,1);//that
+      v->writePush(S_THAT,0);//that
     }
-    else
+    else//var
     {
       // v->writePush(k2s[sym->kindOf("this")],sym->indexOf("this"));//base address of class obj
       // v->writePop(S_POINTER,0);//"this" point class obj
@@ -433,6 +438,15 @@ void CompilationEngine::compileTerm()
         v->writePush(k2s[sym->kindOf("this")],sym->indexOf("this"));//base address of class obj"this"
       }else{
         assert(false);
+      }
+    }else if(t->TokenType() == STRING_CONST){
+      int n=t->token.size();
+      v->writePush(S_CONST,n);
+      v->writeCall("String.new",1);//string obj on stack
+      for(int i=0;i<n;i++){
+        v->writePush(S_CONST,t->token[i]);
+        v->writeCall("String.appendChar",2);//string obj on stack
+        //v->writePop(S_TEMP,0);
       }
     }
     printToken(fout, t);
