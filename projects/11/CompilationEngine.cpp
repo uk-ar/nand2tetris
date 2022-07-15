@@ -260,10 +260,12 @@ void CompilationEngine::compileLet()
       printToken(fout, t); //[
       compileExpression(); //
       printToken(fout, t); //]
-      v->writeArithmetic(C_ADD);
-      v->writePop(S_POINTER,1);//that
+      v->writeArithmetic(C_ADD);//address is in stack
       printToken(fout, t); //=
-      compileExpression(); //
+      compileExpression(); // rvalue is in stack
+      v->writePop(S_TEMP,0);//rvalue is in temp
+      v->writePop(S_POINTER,1);//set that
+      v->writePush(S_TEMP,0);//rvalue is in stack
       v->writePop(S_THAT,0);//that
       printToken(fout, t); //;
     }else if(k==K_FIELD){//LVALUE
@@ -391,7 +393,7 @@ void CompilationEngine::compileTerm()
     {
       compileSubroutineCall();
     }
-    else if (t->peek() == '[')//array
+    else if (t->peek() == '[')//array push value to stack
     {                      // array
       Kind k=sym->kindOf(t->token);//that
       string varName=t->token;
