@@ -9,9 +9,10 @@
 using namespace std;
 
 class VMWriter{
+  int line;
  public:
-  ostream &fout;
-  VMWriter(ostream &outputStream);
+  ostream &fout,&dout;
+  VMWriter(ostream &outputStream,ostream &debugStream);
   void writePush(Segment segment,int index);
   void writePop(Segment segment,int index);
   void writeArithmetic(Command command);

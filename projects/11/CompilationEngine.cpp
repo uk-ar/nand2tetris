@@ -6,7 +6,7 @@
 using namespace std;
 
 // CompilationEngine::CompilationEngine(ostream &outputStream):fout(outputStream){
-CompilationEngine::CompilationEngine(istream &inputStream, ostream &outputStream,ostream &debugStream) : fin(inputStream),t(new JackTokenizer(fin)),sym(new SymbolTable()),fout(debugStream),v(new VMWriter(outputStream))
+CompilationEngine::CompilationEngine(istream &inputStream, ostream &outputStream,ostream &debugStream) : fin(inputStream),t(new JackTokenizer(fin)),sym(new SymbolTable()),fout(debugStream),v(new VMWriter(outputStream,debugStream))
 {
 
 }
@@ -91,6 +91,9 @@ void CompilationEngine::compileSubroutine()
       v->writeCall("Memory.alloc", 1);
       v->writePop(S_LOCAL,sym->indexOf("this"));
       //this=alloc(n)
+    }else if(keyWord==METHOD){
+      v->writePush(S_ARG,0);//base address of class obj
+      v->writePop(S_POINTER,0);//"this" point class obj
     }
     fout << "<statements>" << endl;
     compileStatement();
@@ -256,16 +259,23 @@ void CompilationEngine::compileLet()
     printId(fout, t, kindString[k] ,false,k);// varName
     if (t->TokenType() == SYMBOL and t->symbol() == '[')//array
     {
-      v->writePush(k2s[k],sym->indexOf(varName));
+      if(k==K_FIELD){
+        //v->writePush(S_THIS,sym->indexOf(varName));
+        v->writePush(S_THIS,sym->indexOf(varName));
+        //v->writeArithmetic(C_ADD);//address is in stack
+      }else{
+        v->writePush(k2s[k],sym->indexOf(varName));
+      }
       printToken(fout, t); //[
-      compileExpression(); //
+      compileExpression(); //offset
       printToken(fout, t); //]
       v->writeArithmetic(C_ADD);//address is in stack
       printToken(fout, t); //=
-      compileExpression(); // rvalue is in stack
+      compileExpression(); // rvalue is in stack // may change that
       v->writePop(S_TEMP,0);//rvalue is in temp
       v->writePop(S_POINTER,1);//set that
       v->writePush(S_TEMP,0);//rvalue is in stack
+
       v->writePop(S_THAT,0);//that
       printToken(fout, t); //;
     }else if(k==K_FIELD){//LVALUE
@@ -397,7 +407,11 @@ void CompilationEngine::compileTerm()
     {                      // array
       Kind k=sym->kindOf(t->token);//that
       string varName=t->token;
-      v->writePush(k2s[k],sym->indexOf(varName));
+      if(k==K_FIELD){
+        v->writePush(S_THIS,sym->indexOf(varName));//"this" point class obj
+      }else{
+        v->writePush(k2s[k],sym->indexOf(varName));
+      }
       printId(fout, t, kindString[k] ,false,k);// varName
       printToken(fout, t); //[
       compileExpression(); // expression

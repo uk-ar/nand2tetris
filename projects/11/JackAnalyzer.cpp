@@ -68,19 +68,19 @@ int main(int argc, char *argv[])
     cout << string(argv[1])+" is not regularfile or directory"<<endl;
     exit(-1);
   }
-
+  DIR*dp;
+  dp=opendir(argv[1]);
+  string path=string(argv[1]);
   if(S_ISREG(sb.st_mode)){
+    //cout<< path+"/"+entry->d_name <<endl;
     //string ofileName=string(stripExt(argv[1]))+"T.xml";
     string ofileName=string(stripExt(argv[1]))+".vm";
     string dofileName=string(stripExt(argv[1]))+".xml";
     ofstream fout{ofileName};
-
+    cout<< ofileName <<endl;
     compileFile(string(argv[1]),fout,dofileName);
     //parseFile(string(argv[1]),fout);
   }else{
-    DIR*dp;
-    dp=opendir(argv[1]);
-    string path=string(argv[1]);
     if(path.back()=='/')
       path.pop_back();
 

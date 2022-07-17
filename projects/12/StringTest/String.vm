@@ -1,0 +1,270 @@
+function String.new 1 //0
+push constant 3 //1
+call Memory.alloc 1 //2
+pop local 0 //3
+push local 0 //4
+pop pointer 0 //5
+push argument 0 //6
+pop this 2 //7
+push local 0 //8
+pop pointer 0 //9
+push this 2 //10
+push constant 0 //11
+gt //12
+not //13
+if-goto L0 //14
+push local 0 //15
+pop pointer 0 //16
+push argument 0 //17
+call Memory.alloc 1 //18
+pop this 0 //19
+goto L1 //20
+label L0 //21
+label L1 //22
+push local 0 //23
+pop pointer 0 //24
+push constant 0 //25
+pop this 1 //26
+push local 0 //27
+return //28
+function String.dispose 0 //0
+push argument 0 //1
+pop pointer 0 //2
+push argument 0 //3
+pop pointer 0 //4
+push this 2 //5
+push constant 0 //6
+gt //7
+not //8
+if-goto L2 //9
+push argument 0 //10
+pop pointer 0 //11
+push this 0 //12
+call Memory.deAlloc 1 //13
+pop temp 0 //14
+goto L3 //15
+label L2 //16
+label L3 //17
+return //18
+function String.length 0 //0
+push argument 0 //1
+pop pointer 0 //2
+push argument 0 //3
+pop pointer 0 //4
+push this 1 //5
+return //6
+function String.charAt 0 //0
+push argument 0 //1
+pop pointer 0 //2
+push this 0 //3
+push argument 1 //4
+add //5
+pop pointer 1 //6
+push that 0 //7
+return //8
+function String.setCharAt 0 //0
+push argument 0 //1
+pop pointer 0 //2
+push this 0 //3
+push argument 1 //4
+add //5
+push argument 2 //6
+pop temp 0 //7
+pop pointer 1 //8
+push temp 0 //9
+pop that 0 //10
+return //11
+function String.appendChar 0 //0
+push argument 0 //1
+pop pointer 0 //2
+push this 0 //3
+push argument 0 //4
+pop pointer 0 //5
+push this 1 //6
+add //7
+push argument 1 //8
+pop temp 0 //9
+pop pointer 1 //10
+push temp 0 //11
+pop that 0 //12
+push argument 0 //13
+pop pointer 0 //14
+push argument 0 //15
+pop pointer 0 //16
+push this 1 //17
+push constant 1 //18
+add //19
+pop this 1 //20
+push argument 0 //21
+return //22
+function String.eraseLastChar 0 //0
+push argument 0 //1
+pop pointer 0 //2
+push argument 0 //3
+pop pointer 0 //4
+push argument 0 //5
+pop pointer 0 //6
+push this 1 //7
+push constant 1 //8
+sub //9
+pop this 1 //10
+push this 0 //11
+push argument 0 //12
+pop pointer 0 //13
+push this 1 //14
+add //15
+push constant 0 //16
+pop temp 0 //17
+pop pointer 1 //18
+push temp 0 //19
+pop that 0 //20
+return //21
+function String.intValue0 1 //0
+push argument 0 //1
+pop pointer 0 //2
+push constant 0 //3
+pop local 0 //4
+label L4 //5
+push argument 1 //6
+push argument 0 //7
+pop pointer 0 //8
+push this 1 //9
+lt //10
+push constant 47 //11
+push this 0 //12
+push argument 1 //13
+add //14
+pop pointer 1 //15
+push that 0 //16
+lt //17
+and //18
+push this 0 //19
+push argument 1 //20
+add //21
+pop pointer 1 //22
+push that 0 //23
+push constant 58 //24
+lt //25
+and //26
+not //27
+if-goto L5 //28
+push local 0 //29
+push constant 10 //30
+call Math.multiply 2 //31
+push this 0 //32
+push argument 1 //33
+add //34
+pop pointer 1 //35
+push that 0 //36
+add //37
+push constant 48 //38
+sub //39
+pop local 0 //40
+push argument 1 //41
+push constant 1 //42
+add //43
+pop argument 1 //44
+goto L4 //45
+label L5 //46
+push local 0 //47
+return //48
+function String.intValue 0 //0
+push argument 0 //1
+pop pointer 0 //2
+push this 0 //3
+push constant 0 //4
+add //5
+pop pointer 1 //6
+push that 0 //7
+push constant 45 //8
+eq //9
+not //10
+if-goto L6 //11
+push argument 0 //12
+push constant 1 //13
+call String.intValue0 2 //14
+neg //15
+return //16
+goto L7 //17
+label L6 //18
+label L7 //19
+push argument 0 //20
+push constant 0 //21
+call String.intValue0 2 //22
+return //23
+function String.setInt0 2 //0
+push argument 0 //1
+pop pointer 0 //2
+push argument 1 //3
+push argument 1 //4
+push constant 10 //5
+call Math.divide 2 //6
+push constant 10 //7
+call Math.multiply 2 //8
+sub //9
+pop local 0 //10
+push local 0 //11
+push constant 48 //12
+add //13
+pop local 1 //14
+push argument 1 //15
+push constant 10 //16
+lt //17
+not //18
+if-goto L8 //19
+push argument 0 //20
+push local 1 //21
+call String.appendChar 2 //22
+pop temp 0 //23
+goto L9 //24
+label L8 //25
+push argument 0 //26
+push argument 1 //27
+push constant 10 //28
+call Math.divide 2 //29
+call String.setInt0 2 //30
+pop temp 0 //31
+push argument 0 //32
+push local 1 //33
+call String.appendChar 2 //34
+pop temp 0 //35
+label L9 //36
+return //37
+function String.setInt 0 //0
+push argument 0 //1
+pop pointer 0 //2
+push argument 0 //3
+pop pointer 0 //4
+push constant 0 //5
+pop this 1 //6
+push argument 1 //7
+push constant 0 //8
+gt //9
+not //10
+if-goto L10 //11
+push argument 0 //12
+push argument 1 //13
+call String.setInt0 2 //14
+pop temp 0 //15
+goto L11 //16
+label L10 //17
+push argument 0 //18
+push constant 45 //19
+call String.appendChar 2 //20
+pop temp 0 //21
+push argument 0 //22
+push argument 1 //23
+neg //24
+call String.setInt0 2 //25
+pop temp 0 //26
+label L11 //27
+return //28
+function String.newLine 0 //0
+push constant 128 //1
+return //2
+function String.backSpace 0 //0
+push constant 129 //1
+return //2
+function String.doubleQuote 0 //0
+push constant 34 //1
+return //2
