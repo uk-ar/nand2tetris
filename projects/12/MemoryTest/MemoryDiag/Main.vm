@@ -1,0 +1,464 @@
+function Main.main 5 //0
+push constant 17000 //1
+pop local 4 //2
+push local 4 //3
+push constant 0 //4
+add //5
+push constant 10 //6
+pop temp 0 //7
+pop pointer 1 //8
+push temp 0 //9
+pop that 0 //10
+push local 4 //11
+push constant 1 //12
+add //13
+push constant 333 //14
+call Memory.poke 2 //15
+pop temp 0 //16
+push local 4 //17
+push constant 0 //18
+add //19
+push constant 11 //20
+pop temp 0 //21
+pop pointer 1 //22
+push temp 0 //23
+pop that 0 //24
+push local 4 //25
+push constant 1 //26
+add //27
+call Memory.peek 1 //28
+pop local 0 //29
+push local 4 //30
+push constant 2 //31
+add //32
+push local 0 //33
+push constant 1 //34
+add //35
+pop temp 0 //36
+pop pointer 1 //37
+push temp 0 //38
+pop that 0 //39
+push local 4 //40
+push constant 0 //41
+add //42
+push constant 12 //43
+pop temp 0 //44
+pop pointer 1 //45
+push temp 0 //46
+pop that 0 //47
+push local 4 //48
+push constant 0 //49
+add //50
+push constant 20 //51
+pop temp 0 //52
+pop pointer 1 //53
+push temp 0 //54
+pop that 0 //55
+push constant 20 //56
+call Memory.alloc 1 //57
+pop local 1 //58
+push local 4 //59
+push constant 3 //60
+add //61
+push local 1 //62
+pop temp 0 //63
+pop pointer 1 //64
+push temp 0 //65
+pop that 0 //66
+push local 4 //67
+push constant 0 //68
+add //69
+push constant 21 //70
+pop temp 0 //71
+pop pointer 1 //72
+push temp 0 //73
+pop that 0 //74
+push local 1 //75
+push constant 20 //76
+call Main.checkRange 2 //77
+pop temp 0 //78
+push local 4 //79
+push constant 0 //80
+add //81
+push constant 22 //82
+pop temp 0 //83
+pop pointer 1 //84
+push temp 0 //85
+pop that 0 //86
+push local 4 //87
+push constant 0 //88
+add //89
+push constant 30 //90
+pop temp 0 //91
+pop pointer 1 //92
+push temp 0 //93
+pop that 0 //94
+push constant 3 //95
+call Memory.alloc 1 //96
+pop local 2 //97
+push local 4 //98
+push constant 4 //99
+add //100
+push local 2 //101
+pop temp 0 //102
+pop pointer 1 //103
+push temp 0 //104
+pop that 0 //105
+push local 4 //106
+push constant 0 //107
+add //108
+push constant 31 //109
+pop temp 0 //110
+pop pointer 1 //111
+push temp 0 //112
+pop that 0 //113
+push local 2 //114
+push constant 3 //115
+call Main.checkRange 2 //116
+pop temp 0 //117
+push local 4 //118
+push constant 0 //119
+add //120
+push constant 32 //121
+pop temp 0 //122
+pop pointer 1 //123
+push temp 0 //124
+pop that 0 //125
+push local 2 //126
+push constant 3 //127
+push local 1 //128
+push constant 3 //129
+call Main.checkOverlap 4 //130
+pop temp 0 //131
+push local 4 //132
+push constant 0 //133
+add //134
+push constant 33 //135
+pop temp 0 //136
+pop pointer 1 //137
+push temp 0 //138
+pop that 0 //139
+push local 4 //140
+push constant 0 //141
+add //142
+push constant 40 //143
+pop temp 0 //144
+pop pointer 1 //145
+push temp 0 //146
+pop that 0 //147
+push constant 500 //148
+call Memory.alloc 1 //149
+pop local 3 //150
+push local 4 //151
+push constant 5 //152
+add //153
+push local 3 //154
+pop temp 0 //155
+pop pointer 1 //156
+push temp 0 //157
+pop that 0 //158
+push local 4 //159
+push constant 0 //160
+add //161
+push constant 41 //162
+pop temp 0 //163
+pop pointer 1 //164
+push temp 0 //165
+pop that 0 //166
+push local 3 //167
+push constant 500 //168
+call Main.checkRange 2 //169
+pop temp 0 //170
+push local 4 //171
+push constant 0 //172
+add //173
+push constant 42 //174
+pop temp 0 //175
+pop pointer 1 //176
+push temp 0 //177
+pop that 0 //178
+push local 3 //179
+push constant 500 //180
+push local 1 //181
+push constant 3 //182
+call Main.checkOverlap 4 //183
+pop temp 0 //184
+push local 4 //185
+push constant 0 //186
+add //187
+push constant 43 //188
+pop temp 0 //189
+pop pointer 1 //190
+push temp 0 //191
+pop that 0 //192
+push local 3 //193
+push constant 500 //194
+push local 2 //195
+push constant 3 //196
+call Main.checkOverlap 4 //197
+pop temp 0 //198
+push local 4 //199
+push constant 0 //200
+add //201
+push constant 44 //202
+pop temp 0 //203
+pop pointer 1 //204
+push temp 0 //205
+pop that 0 //206
+push local 4 //207
+push constant 0 //208
+add //209
+push constant 50 //210
+pop temp 0 //211
+pop pointer 1 //212
+push temp 0 //213
+pop that 0 //214
+push local 1 //215
+call Memory.deAlloc 1 //216
+pop temp 0 //217
+push local 4 //218
+push constant 0 //219
+add //220
+push constant 51 //221
+pop temp 0 //222
+pop pointer 1 //223
+push temp 0 //224
+pop that 0 //225
+push local 2 //226
+call Memory.deAlloc 1 //227
+pop temp 0 //228
+push local 4 //229
+push constant 0 //230
+add //231
+push constant 52 //232
+pop temp 0 //233
+pop pointer 1 //234
+push temp 0 //235
+pop that 0 //236
+push local 4 //237
+push constant 0 //238
+add //239
+push constant 60 //240
+pop temp 0 //241
+pop pointer 1 //242
+push temp 0 //243
+pop that 0 //244
+push constant 3 //245
+call Memory.alloc 1 //246
+pop local 2 //247
+push local 4 //248
+push constant 6 //249
+add //250
+push local 2 //251
+pop temp 0 //252
+pop pointer 1 //253
+push temp 0 //254
+pop that 0 //255
+push local 4 //256
+push constant 0 //257
+add //258
+push constant 61 //259
+pop temp 0 //260
+pop pointer 1 //261
+push temp 0 //262
+pop that 0 //263
+push local 2 //264
+push constant 3 //265
+call Main.checkRange 2 //266
+pop temp 0 //267
+push local 4 //268
+push constant 0 //269
+add //270
+push constant 62 //271
+pop temp 0 //272
+pop pointer 1 //273
+push temp 0 //274
+pop that 0 //275
+push local 2 //276
+push constant 3 //277
+push local 3 //278
+push constant 500 //279
+call Main.checkOverlap 4 //280
+pop temp 0 //281
+push local 4 //282
+push constant 0 //283
+add //284
+push constant 63 //285
+pop temp 0 //286
+pop pointer 1 //287
+push temp 0 //288
+pop that 0 //289
+push local 4 //290
+push constant 0 //291
+add //292
+push constant 70 //293
+pop temp 0 //294
+pop pointer 1 //295
+push temp 0 //296
+pop that 0 //297
+push local 3 //298
+call Memory.deAlloc 1 //299
+pop temp 0 //300
+push local 4 //301
+push constant 0 //302
+add //303
+push constant 71 //304
+pop temp 0 //305
+pop pointer 1 //306
+push temp 0 //307
+pop that 0 //308
+push local 2 //309
+call Memory.deAlloc 1 //310
+pop temp 0 //311
+push local 4 //312
+push constant 0 //313
+add //314
+push constant 72 //315
+pop temp 0 //316
+pop pointer 1 //317
+push temp 0 //318
+pop that 0 //319
+push local 4 //320
+push constant 0 //321
+add //322
+push constant 70 //323
+pop temp 0 //324
+pop pointer 1 //325
+push temp 0 //326
+pop that 0 //327
+push constant 8000 //328
+call Memory.alloc 1 //329
+pop local 1 //330
+push local 4 //331
+push constant 7 //332
+add //333
+push local 1 //334
+pop temp 0 //335
+pop pointer 1 //336
+push temp 0 //337
+pop that 0 //338
+push local 4 //339
+push constant 0 //340
+add //341
+push constant 71 //342
+pop temp 0 //343
+pop pointer 1 //344
+push temp 0 //345
+pop that 0 //346
+push local 1 //347
+push constant 8000 //348
+call Main.checkRange 2 //349
+pop temp 0 //350
+push local 4 //351
+push constant 0 //352
+add //353
+push constant 72 //354
+pop temp 0 //355
+pop pointer 1 //356
+push temp 0 //357
+pop that 0 //358
+push local 1 //359
+call Memory.deAlloc 1 //360
+pop temp 0 //361
+push local 4 //362
+push constant 0 //363
+add //364
+push constant 73 //365
+pop temp 0 //366
+pop pointer 1 //367
+push temp 0 //368
+pop that 0 //369
+push constant 7000 //370
+call Memory.alloc 1 //371
+pop local 1 //372
+push local 4 //373
+push constant 0 //374
+add //375
+push constant 74 //376
+pop temp 0 //377
+pop pointer 1 //378
+push temp 0 //379
+pop that 0 //380
+push local 1 //381
+push constant 7000 //382
+call Main.checkRange 2 //383
+pop temp 0 //384
+push local 4 //385
+push constant 0 //386
+add //387
+push constant 75 //388
+pop temp 0 //389
+pop pointer 1 //390
+push temp 0 //391
+pop that 0 //392
+push local 1 //393
+call Memory.deAlloc 1 //394
+pop temp 0 //395
+push local 4 //396
+push constant 8 //397
+add //398
+push local 1 //399
+pop temp 0 //400
+pop pointer 1 //401
+push temp 0 //402
+pop that 0 //403
+push local 4 //404
+push constant 0 //405
+add //406
+push constant 100 //407
+pop temp 0 //408
+pop pointer 1 //409
+push temp 0 //410
+pop that 0 //411
+return //412
+function Main.checkRange 1 //0
+push argument 0 //1
+push argument 1 //2
+add //3
+push constant 1 //4
+sub //5
+pop local 0 //6
+push argument 0 //7
+push constant 2048 //8
+lt //9
+push local 0 //10
+push constant 16383 //11
+gt //12
+or //13
+not //14
+if-goto L12 //15
+call Sys.halt 0 //16
+pop temp 0 //17
+goto L13 //18
+label L12 //19
+label L13 //19
+return //19
+function Main.checkOverlap 2 //0
+push argument 0 //1
+push argument 1 //2
+add //3
+push constant 1 //4
+sub //5
+pop local 0 //6
+push argument 2 //7
+push argument 3 //8
+add //9
+push constant 1 //10
+sub //11
+pop local 1 //12
+push argument 0 //13
+push local 1 //14
+gt //15
+push local 0 //16
+push argument 2 //17
+lt //18
+or //19
+not //20
+not //21
+if-goto L14 //22
+call Sys.halt 0 //23
+pop temp 0 //24
+goto L15 //25
+label L14 //26
+label L15 //26
+return //26

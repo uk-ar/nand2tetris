@@ -215,8 +215,6 @@ void CompilationEngine::compileSubroutineCall()
       fullName=sym->typeOf(t->token);
       //fout << t->token <<":"<< sym->kindOf(t->token) <<endl;
       if(k==K_FIELD){
-        v->writePush(k2s[sym->kindOf("this")],sym->indexOf("this"));//base address of class obj
-        v->writePop(S_POINTER,0);//"this" point class obj
         // printToken(fout, t); //=
         // compileExpression(); //
         v->writePush(S_THIS,sym->indexOf(t->token));//"this" point class obj
@@ -280,8 +278,6 @@ void CompilationEngine::compileLet()
       printToken(fout, t); //;
     }else if(k==K_FIELD){//LVALUE
       //this may K_VAR or K_ARG
-      v->writePush(k2s[sym->kindOf("this")],sym->indexOf("this"));//base address of class obj
-      v->writePop(S_POINTER,0);//"this" point class obj
       printToken(fout, t); //=
       compileExpression(); //
       v->writePop(S_THIS,sym->indexOf(varName));//"this" point class obj

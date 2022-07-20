@@ -1,0 +1,213 @@
+function Memory.init 0 //0
+push constant 0 //1
+pop static 1 //2
+push constant 2048 //3
+pop static 0 //4
+push static 0 //5
+push constant 16383 //6
+push constant 2048 //7
+sub //8
+push constant 2 //9
+sub //10
+call FreeList.setSize 2 //11
+pop temp 0 //12
+push static 0 //13
+push constant 0 //14
+call FreeList.setNext 2 //15
+pop temp 0 //16
+return //17
+function Memory.peek 0 //0
+push static 1 //1
+push argument 0 //2
+add //3
+pop pointer 1 //4
+push that 0 //5
+return //6
+function Memory.poke 0 //0
+push static 1 //1
+push argument 0 //2
+add //3
+push argument 1 //4
+pop temp 0 //5
+pop pointer 1 //6
+push temp 0 //7
+pop that 0 //8
+return //9
+function Memory.alloc 2 //0
+push static 0 //1
+pop local 0 //2
+label L0 //3
+push local 0 //3
+push constant 0 //4
+eq //5
+not //6
+push local 0 //7
+call FreeList.getSize 1 //8
+push argument 0 //9
+lt //10
+push constant 1 //11
+add //12
+and //13
+not //14
+if-goto L1 //15
+push local 0 //16
+call FreeList.getNext 1 //17
+pop local 0 //18
+goto L0 //19
+label L1 //20
+push local 0 //20
+push constant 0 //21
+eq //22
+not //23
+if-goto L2 //24
+push constant 0 //25
+return //26
+goto L3 //27
+label L2 //28
+label L3 //28
+push local 0 //28
+push constant 2 //29
+add //30
+push local 0 //31
+call FreeList.getSize 1 //32
+add //33
+push argument 0 //34
+sub //35
+pop local 1 //36
+push local 0 //37
+push local 0 //38
+call FreeList.getSize 1 //39
+push argument 0 //40
+sub //41
+push constant 1 //42
+sub //43
+call FreeList.setSize 2 //44
+pop temp 0 //45
+push local 1 //46
+push constant 1 //47
+neg //48
+add //49
+push argument 0 //50
+push constant 1 //51
+add //52
+pop temp 0 //53
+pop pointer 1 //54
+push temp 0 //55
+pop that 0 //56
+push local 1 //57
+return //58
+function Memory.deAlloc 5 //0
+push static 0 //1
+pop local 0 //2
+label L4 //3
+push local 0 //3
+call FreeList.getNext 1 //4
+push constant 0 //5
+eq //6
+not //7
+push argument 0 //8
+push local 0 //9
+call FreeList.getNext 1 //10
+gt //11
+and //12
+not //13
+if-goto L5 //14
+push local 0 //15
+call FreeList.getNext 1 //16
+pop local 0 //17
+goto L4 //18
+label L5 //19
+push argument 0 //19
+push constant 1 //20
+sub //21
+pop local 1 //22
+push local 0 //23
+call FreeList.getNext 1 //24
+pop local 2 //25
+push local 1 //26
+call FreeList.getSize 1 //27
+pop local 3 //28
+push local 0 //29
+call FreeList.getSize 1 //30
+pop local 4 //31
+push local 1 //32
+push local 3 //33
+add //34
+push local 2 //35
+eq //36
+not //37
+if-goto L6 //38
+push local 3 //39
+push local 2 //40
+call FreeList.getSize 1 //41
+add //42
+pop local 3 //43
+push local 1 //44
+push local 3 //45
+call FreeList.setSize 2 //46
+pop temp 0 //47
+push local 1 //48
+push local 2 //49
+call FreeList.getNext 1 //50
+call FreeList.setNext 2 //51
+pop temp 0 //52
+push local 0 //53
+push local 1 //54
+call FreeList.setNext 2 //55
+pop temp 0 //56
+push local 0 //57
+push constant 2 //58
+add //59
+push local 4 //60
+add //61
+push local 1 //62
+eq //63
+not //64
+if-goto L7 //65
+push local 0 //66
+push local 4 //67
+push local 3 //68
+add //69
+call FreeList.setSize 2 //70
+pop temp 0 //71
+push local 0 //72
+push local 1 //73
+call FreeList.getNext 1 //74
+call FreeList.setNext 2 //75
+pop temp 0 //76
+return //77
+goto L8 //78
+label L7 //79
+label L8 //79
+return //79
+goto L9 //80
+label L6 //81
+label L9 //81
+push local 0 //81
+push constant 2 //82
+add //83
+push local 4 //84
+add //85
+push local 1 //86
+eq //87
+not //88
+if-goto L10 //89
+push local 0 //90
+push local 4 //91
+push local 3 //92
+add //93
+call FreeList.setSize 2 //94
+pop temp 0 //95
+return //96
+goto L11 //97
+label L10 //98
+label L11 //98
+push local 1 //98
+push local 2 //99
+call FreeList.setNext 2 //100
+pop temp 0 //101
+push local 0 //102
+push local 1 //103
+call FreeList.setNext 2 //104
+pop temp 0 //105
+return //106

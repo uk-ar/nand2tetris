@@ -1,0 +1,24 @@
+class FreeList{
+  field int length;
+  field FreeList next;
+  constructor FreeList new(int car,FreeList cdr){
+    let length = car;
+    let next = cdr;
+    return this;
+  }
+  method int getSize() {
+    return length;
+  }
+  method void setSize(int size) {
+    let length=size;
+    return;
+  }
+  method FreeList getNext() {
+    return next;
+  }
+  method FreeList setNext(FreeList f) {
+    let next=f;
+    return;
+  }
+
+}

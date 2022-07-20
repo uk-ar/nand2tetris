@@ -1,0 +1,98 @@
+// This file is part of www.nand2tetris.org
+// and the book "The Elements of Computing Systems"
+// by Nisan and Schocken, MIT Press.
+// File name: projects/12/Memory.jack
+
+/**
+ * This library provides two services: direct access to the computer's main
+ * memory (RAM), and allocation and recycling of memory blocks. The Hack RAM
+ * consists of 32,768 words, each holding a 16-bit binary number.
+ */
+class Memory {
+  static FreeList freeList;
+  static int base;
+    /** Initializes the class. */
+    function void init() {
+      let base=0;
+      let freeList=2048;
+      //let freeList=FreeList.new(28,null);//heapLength
+      do freeList.setSize(16383-2048-2);//high-low-head+include_high=14334->14313
+      //do freeList.setSize(15);//high-low-head+include_high=14334->14313
+      do freeList.setNext(null);
+      /* let v=FreeList.new(5,null); */
+      /* let v=FreeList.new(10,List.new(3,v));//[10,3,5] */
+      return;
+    }
+
+    /** Returns the RAM value at the given address. */
+    function int peek(int address) {
+      return base[address];
+    }
+
+    /** Sets the RAM value at the given address to the given value. */
+    function void poke(int address, int value) {
+      let base[address]=value;
+      return;
+    }
+
+    /** Finds an available RAM block of the given size and returns
+     *  a reference to its base address. */
+    function int alloc(int size) {
+      var FreeList cur;
+      var int block;
+      let cur=freeList;
+      while((~(cur=null)) & (cur.getSize()<size+1)){
+        let cur=cur.getNext();
+      }
+      if(cur=null){
+        return null;
+      }
+      //01235
+      //hn000t
+      //.  b
+      //0
+      //22 //size 20 cur+size+2=22
+      //3
+      let block=cur+2+cur.getSize()-size;//16364
+      do cur.setSize(cur.getSize()-size-1);
+      let block[-1]=size+1;//set header
+      return block;
+    }
+
+    /** De-allocates the given object (cast as an array) by making
+     *  it available for future allocations. */
+    function void deAlloc(Array o) {
+      var FreeList cur,block,next,bs,cs;
+      //var int size;
+      let cur=freeList;
+      while((~(cur.getNext()=null)) & (o>cur.getNext())){
+        let cur=cur.getNext();
+      }
+      let block=o-1;
+      let next=cur.getNext();
+      let bs=block.getSize();
+      let cs=cur.getSize();
+      //012356
+      //ln3004n00
+      //  b. n
+      if((block+bs)=next){//concat with next
+        let bs=bs+next.getSize();
+        do block.setSize(bs);
+        do block.setNext(next.getNext());
+        do cur.setNext(block);
+        if((cur+2+cs)=block){//concat with prev
+          do cur.setSize(cs+bs);
+          do cur.setNext(block.getNext());
+          return;
+        }
+        return;
+      }
+      if((cur+2+cs)=block){//concat with prev
+        do cur.setSize(cs+bs);
+        return;
+      }
+      do block.setNext(next);
+      do cur.setNext(block);
+      return;
+    }
+}
