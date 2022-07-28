@@ -1,0 +1,13 @@
+function Array.new 1 //0
+push argument 0 //1
+call Memory.alloc 1 //2
+pop local 0 //3
+push local 0 //4
+return //5
+function Array.dispose 0 //0
+push argument 0 //1
+pop pointer 0 //2
+push argument 0 //3
+call Memory.deAlloc 1 //4
+pop temp 0 //5
+return //6
