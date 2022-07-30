@@ -208,9 +208,10 @@ void CompilationEngine::compileSubroutineCall()
 {
   string fullName;
   int args=0;
+  fout << "<subroutineCall>" << endl;
   if(t->peek()=='.'){//className or varName
     // method call
-    if(sym->kindOf(t->token)==K_VAR or sym->kindOf(t->token)==K_FIELD){
+    if(sym->kindOf(t->token)==K_VAR or sym->kindOf(t->token)==K_FIELD or sym->kindOf(t->token)==K_ARG){
       Kind k=sym->kindOf(t->token);
       fullName=sym->typeOf(t->token);
       //fout << t->token <<":"<< sym->kindOf(t->token) <<endl;
@@ -242,6 +243,7 @@ void CompilationEngine::compileSubroutineCall()
   args+=compileExpressionList();
   printToken(fout, t); //)
   v->writeCall(fullName,args);
+  fout << "</subroutineCall>" << endl;
 }
 
 void CompilationEngine::compileLet()
