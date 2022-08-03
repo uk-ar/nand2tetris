@@ -83,11 +83,33 @@ class Screen {
         let y2=tmp;
       }
       if(y1=y2){
+        let a=(x1+15)/16*16;//(0+16)/16*16=>16
+        while((x1<a) & (x1<(x2+1))){
+          do Screen.drawPixel(x1,y1);
+          let x1=x1+1;
+        }
+        if(color){
+          let b=-1;
+        }else{
+          let b=0;
+        }
+        let a=(y1*32)+(x1/16);
+        while((x1+16)<(x2+1)){
+          let base[a]=b;
+          let x1=x1+16;
+          let a=a+1;
+        }
+        let x1=Math.max(x1,(x2)/16*16);//(0+16)/16*16=>16
         while(x1<(x2+1)){
           do Screen.drawPixel(x1,y1);
           let x1=x1+1;
         }
         return;
+        /* while(x1<(x2+1)){ */
+        /*   do Screen.drawPixel(x1,y1); */
+        /*   let x1=x1+1; */
+        /* } */
+        /* return; */
       }
       let dx=x2-x1;
       let dy=y2-y1;
@@ -124,14 +146,9 @@ class Screen {
     /** Draws a filled rectangle whose top left corner is (x1, y1)
      * and bottom right corner is (x2,y2), using the current color. */
     function void drawRectangle(int x1, int y1, int x2, int y2) {
-      var int y;
-      while(x1<(x2+1)){
-        let y=y1;
-        while(y<(y2+1)){
-          do Screen.drawPixel(x1,y);
-          let y=y+1;
-        }
-        let x1=x1+1;
+      while(y1<(y2+1)){
+        do Screen.drawLine(x1,y1,x2,y1);
+        let y1=y1+1;
       }
       return;
     }
