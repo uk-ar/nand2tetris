@@ -84,13 +84,30 @@ int main(int argc, char *argv[])
 
     parseFile(string(argv[1]),c,fout);
   }else{
+    //   dirent*entry = readdir(dp);
+    //   while(entry!=NULL){
+    //     if(entry!=NULL){
+    //       if(getExt(string(entry->d_name))==".jack"){
+    //         cout<< path+"/"+entry->d_name <<endl;
+    //         //string ofileName=stripExt(path+"/"+entry->d_name)+"T.xml";
+    //         string ofileName=stripExt(path+"/"+entry->d_name)+".vm";
+    //         string dofileName=stripExt(path+"/"+entry->d_name)+".xml";
+    //         ofstream fout{ofileName};
+    //         cout<< ofileName <<endl;
+    //         compileFile(path+"/"+entry->d_name,fout,dofileName);
+    //         //parseFile(path+"/"+entry->d_name,fout);
+    //       }
+    //     }
+    //     entry=readdir(dp);
+    //   }
+    // }
     DIR*dp;
     dp=opendir(argv[1]);
     string path=string(argv[1]);
     if(path.back()=='/')
       path.pop_back();
-    fs::path p=path;
-    p/=p.filename().string()+".asm";
+    fs::path p=fs::absolute(path);
+    p/="Main.asm";
     ofstream fout{p.string()};
     CommandWriter *c=new CommandWriter(fout);
     c->writeInit();
@@ -105,6 +122,7 @@ int main(int argc, char *argv[])
       }
       entry=readdir(dp);
     }
+    cout<< p.string() <<endl;
   }
   return 0;
 }
