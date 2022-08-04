@@ -76,7 +76,7 @@ void CompilationEngine::compileSubroutine()
     printId(fout, t, "subroutine" ,true,K_NONE);// subroutineName
     printToken(fout, t); //(
     if(keyWord==METHOD)
-      sym->define("this","class",K_ARG);
+      sym->define("this","class",K_ARG);//handle "this" as argument
     compileParameterList();
     printToken(fout, t); //)
     fout << "<subroutineBody>" << endl;
@@ -84,12 +84,14 @@ void CompilationEngine::compileSubroutine()
     int pre=sym->varCount(K_VAR);
     compileVarDec();
     if(keyWord==CONSTRUCTOR)
-      sym->define("this","class",K_VAR);
+      sym->define("this","class",K_VAR);//handle "this" as local var
     v->writeFunction(className+"."+subroutineName,sym->varCount(K_VAR) - pre);
     if(keyWord==CONSTRUCTOR){
       v->writePush(S_CONST,sym->varCount(K_FIELD));
       v->writeCall("Memory.alloc", 1);
-      v->writePop(S_LOCAL,sym->indexOf("this"));
+      v->writePop(S_LOCAL,sym->indexOf("this"));//set "this"
+      v->writePush(S_LOCAL,sym->indexOf("this"));//get "this"
+      v->writePop(S_POINTER,0);//"this" point class obj
       //this=alloc(n)
     }else if(keyWord==METHOD){
       v->writePush(S_ARG,0);//base address of class obj
@@ -211,7 +213,7 @@ void CompilationEngine::compileSubroutineCall()
   fout << "<subroutineCall>" << endl;
   if(t->peek()=='.'){//className or varName
     // method call
-    if(sym->kindOf(t->token)==K_VAR or sym->kindOf(t->token)==K_FIELD or sym->kindOf(t->token)==K_ARG){
+    if(sym->kindOf(t->token)==K_VAR or sym->kindOf(t->token)==K_FIELD or sym->kindOf(t->token)==K_ARG or sym->kindOf(t->token)==K_STATIC){
       Kind k=sym->kindOf(t->token);
       fullName=sym->typeOf(t->token);
       //fout << t->token <<":"<< sym->kindOf(t->token) <<endl;
