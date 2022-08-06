@@ -8,15 +8,21 @@
  * Note: Jack compilers implement multiplication and division using OS method calls.
  */
 class Math {
-  static Array a2;
+  static Array a2,a3;
     /** Initializes the library. */
     function void init() {
-      var int i,j;
+      var int i,j,k;
       let j=1;
-      let a2=Array.new(15);
-      while(i<15){
+      let k=-1;
+      let a2=Array.new(16);
+      let a3=Array.new(16);
+      while(i<16){
         let a2[i]=j;
         let j=j+j;
+
+        let a3[i]=k;
+        let k=k+k;
+
         let i=i+1;
       }
       return;
@@ -36,13 +42,18 @@ class Math {
      *  the Jack expressions x*y and multiply(x,y) return the same value.
      */
     function int multiply(int x, int y) {
-      var int f,i,shiftedX,sum;
+      var int f,i,shiftedX,sum,tmp;
       if((x<0)=(y<0)){
         let f=1;
       }
+      if(x<y){
+        let tmp=y;
+        let y=x;
+        let x=tmp;
+      }
       let shiftedX=Math.abs(x);
       let y=Math.abs(y);
-      while(i<15){
+      while(~((a3[i]&y)=0)){
         if(~((y&a2[i])=0)){
           let sum=sum+shiftedX;
         }

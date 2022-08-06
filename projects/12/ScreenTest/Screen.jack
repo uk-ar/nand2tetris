@@ -31,8 +31,9 @@ class Screen {
     /** Erases the entire screen. */
     function void clearScreen() {
       var int i;
-      while(base+i<24576){
-        let base[i]=0;
+      let i=base;
+      while(i<24576){
+        let i[0]=0;
         let i=i+1;
       }
       return;
@@ -44,17 +45,36 @@ class Screen {
       let color=b;
       return;
     }
-
+    function int shift(int n,int i){
+      while(i>0){
+        let n=n+n;
+        let i=i-1;
+      }
+      return n;
+    }
     /** Draws the (x,y) pixel, using the current color. */
     function void drawPixel(int x, int y) {
-      var int off,mod;
-      let off=(y*32)+(x/16);
-      let mod=x-((x/16)*16);
       if(color){
-        let base[off]=a2[mod]|base[off];
+        do Screen.drawPixelB(x,y);
       }else{
-        let base[off]=(~(a2[mod]))&base[off];
+        do Screen.drawPixelW(x,y);
       }
+      return;
+    }
+    function void drawPixelW(int x, int y) {
+      var int off,mod,x16;
+      let x16=x/16;
+      let off=Screen.shift(y,5)+x16;
+      let mod=x-Screen.shift(x16,4);
+      let base[off]=(~(a2[mod]))&base[off];
+      return;
+    }
+    function void drawPixelB(int x, int y) {
+      var int off,mod,x16;
+      let x16=x/16;
+      let off=Screen.shift(y,5)+x16;
+      let mod=x-Screen.shift(x16,4);
+      let base[off]=a2[mod]|base[off];
       return;
     }
 
@@ -67,11 +87,20 @@ class Screen {
           let y1=y2;
           let y2=tmp;
         }
-        while(y1<(y2+1)){
-          do Screen.drawPixel(x1,y1);
-          let y1=y1+1;
+        let y2=y2+1;
+        if(color){
+          while(y1<y2){
+            do Screen.drawPixelB(x1,y1);
+            let y1=y1+1;
+          }
+          return;
+        }else{
+          while(y1<y2){
+            do Screen.drawPixelW(x1,y1);
+            let y1=y1+1;
+          }
+          return;
         }
-        return;
       }
       if(x1>x2){
         let tmp=x1;
@@ -84,37 +113,48 @@ class Screen {
       }
       if(y1=y2){
         let a=(x1+15)/16*16;//(0+16)/16*16=>16
-        while((x1<a) & (x1<(x2+1))){
-          do Screen.drawPixel(x1,y1);
-          let x1=x1+1;
-        }
+        let x2=x2+1;
         if(color){
-          let b=-1;
+          while((x1<a) & (x1<x2)){
+            do Screen.drawPixelB(x1,y1);
+            let x1=x1+1;
+          }
+          let a=(y1*32)+(x1/16);
+          while((x1+16)<x2){
+            let base[a]=-1;
+            let x1=x1+16;
+            let a=a+1;
+          }
+          let x1=Math.max(x1,(x2)/16*16);//(0+16)/16*16=>16
+          while(x1<x2){
+            do Screen.drawPixelB(x1,y1);
+            let x1=x1+1;
+          }
+          return;
         }else{
-          let b=0;
+          while((x1<a) & (x1<x2)){
+            do Screen.drawPixelW(x1,y1);
+            let x1=x1+1;
+          }
+          let a=(y1*32)+(x1/16);
+          while((x1+16)<x2){
+            let base[a]=0;
+            let x1=x1+16;
+            let a=a+1;
+          }
+          let x1=Math.max(x1,(x2)/16*16);//(0+16)/16*16=>16
+          while(x1<x2){
+            do Screen.drawPixelW(x1,y1);
+            let x1=x1+1;
+          }
+          return;
         }
-        let a=(y1*32)+(x1/16);
-        while((x1+16)<(x2+1)){
-          let base[a]=b;
-          let x1=x1+16;
-          let a=a+1;
-        }
-        let x1=Math.max(x1,(x2)/16*16);//(0+16)/16*16=>16
-        while(x1<(x2+1)){
-          do Screen.drawPixel(x1,y1);
-          let x1=x1+1;
-        }
-        return;
-        /* while(x1<(x2+1)){ */
-        /*   do Screen.drawPixel(x1,y1); */
-        /*   let x1=x1+1; */
-        /* } */
-        /* return; */
       }
       let dx=x2-x1;
       let dy=y2-y1;
       if(dy>0){
-        while((x1+a)<(x2+1)){
+        let x2=x2+1;
+        while((x1+a)<x2){
           do Screen.drawPixel(x1+a,y1+b);
           //if(b/a>dy/dx){
           if((b*dx)-(dy*a)>0){
@@ -127,7 +167,8 @@ class Screen {
           }
         }
       }else{
-        while((x1+a)<(x2+1)){
+        let x2=x2+1;
+        while((x1+a)<x2){
           do Screen.drawPixel(x1+a,y1-b);
           //if(b/a>dy/dx){
           if((b*dx)+(dy*a)>0){
@@ -146,7 +187,8 @@ class Screen {
     /** Draws a filled rectangle whose top left corner is (x1, y1)
      * and bottom right corner is (x2,y2), using the current color. */
     function void drawRectangle(int x1, int y1, int x2, int y2) {
-      while(y1<(y2+1)){
+      let y2=y2+1;
+      while(y1<y2){
         do Screen.drawLine(x1,y1,x2,y1);
         let y1=y1+1;
       }
@@ -155,12 +197,17 @@ class Screen {
 
     /** Draws a filled circle of radius r<=181 around (x,y), using the current color. */
     function void drawCircle(int x, int y, int r) {
-      var int a,b;
+      var int a,b,d,r2;
       let b=r;//a++,b--;
+      let d=(a*a)+(b*b);//a2+2a+1-a2=2a+1;b2-2b+1-b2=-2b+1
+      let r2=r*r;
       while((a<(r+1)) & (b>-1)){
-        if(((a*a)+(b*b))>(r*r)){
+        if(((a*a)+(b*b))>r2){
+        //if(d>r2){
+          //let d=d+2*b+1;
           let b=b-1;
         }else{
+          //let d=d-2*a+1;
           let a=a+1;
         }
         //(int x1, int y1, int x2, int y2) {
